@@ -1,18 +1,17 @@
 package principal;
 
-import java.util.ArrayList;
-import javax.swing.UIManager;
-import visao.FrmTelaInicial;
-import modelo.Produto;
+import visao.FrmTelaPrincipal;
+import dao.Conexao;
+import java.sql.Connection;
 
 public class Principal {
-
     public static void main(String[] args) {
-        ArrayList<Produto> estoque = new ArrayList<>();
-        FrmTelaInicial objetotela = new FrmTelaInicial(estoque);
-        objetotela.setVisible(true);
-        UIManager.put("OptionPane.yesButtonText", "Sim");
-        UIManager.put("OptionPane.noButtonText", "Não");
-        UIManager.put("OptionPane.cancelButtonText", "Cancelar");
+
+        Conexao conexao = new Conexao();
+
+        Connection conn = conexao.conectar();
+
+        FrmTelaPrincipal telaPrincipal = new FrmTelaPrincipal();
+        telaPrincipal.setVisible(true);
     }
 }
