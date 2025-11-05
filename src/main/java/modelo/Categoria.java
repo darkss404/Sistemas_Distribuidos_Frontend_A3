@@ -1,33 +1,22 @@
 package modelo;
 
 public class Categoria {
-
     private int id;
-    private String nome;
+    private String nomeCategoria;
     private String tamanho;
     private String embalagem;
 
-    public Categoria(int id, String nome, String tamanho, String embalagem) {
+    public Categoria(int id, String nomeCategoria, String tamanho, String embalagem) {
         this.id = id;
-        this.nome = nome;
-        this.tamanho = tamanho;
-        this.embalagem = embalagem;
+        this.nomeCategoria = nomeCategoria;
+        this.tamanho = tamanho; 
+        this.embalagem = embalagem; 
     }
 
-    public Categoria(String nome) {
-        this.nome = nome;
-        this.tamanho = "";
-        this.embalagem = "";
+    public Categoria(String nomeCategoria, String tamanho, String embalagem) {
+        this(0, nomeCategoria, tamanho, embalagem);
     }
 
-    public Categoria(String nome, String tamanho, String embalagem) {
-        this.nome = nome;
-        this.tamanho = tamanho;
-        this.embalagem = embalagem;
-
-    }
-
-    // Getters e Setters
     public int getId() {
         return id;
     }
@@ -36,14 +25,18 @@ public class Categoria {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getNomeCategoria() {
+        return nomeCategoria;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setNomeCategoria(String nome) {
+        this.nomeCategoria = nome;
     }
 
+    @Override
+    public String toString() {
+        return nomeCategoria;
+    }
     public String getTamanho() {
         return tamanho;
     }
@@ -58,10 +51,5 @@ public class Categoria {
 
     public void setEmbalagem(String embalagem) {
         this.embalagem = embalagem;
-    }
-
-    @Override
-    public String toString() {
-        return nome;
     }
 }

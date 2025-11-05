@@ -1,49 +1,35 @@
 package modelo;
+import java.util.ArrayList;
+import dao.ProdutoDAO;
 
-public class Produto {
 
+public class Produto{
     private int id;
     private String nome;
     private String unidade;
-    private Double valorUnitario;
-    private int qtdMin;
-    private int qtdMax;
-    private int qtdAtual;
-    private Categoria categoria;
-    private Double valorTotal;
-    private int qtdEntrada;
-    private int qtdSaida;
+    private double preco;
+    private int quantidade;
+    private int min;
+    private int max;
+    private String categoria;
+    private ProdutoDAO dao;
 
-    public double getValorTotal() {
-        return valorUnitario * qtdAtual;
+    public Produto() {
+        this(0,"","",0.0,0,0,1000,"");
     }
 
-    public Produto(int id, String nome, String unidade, Double valorUnitario, int qtdMin, int qtdMax, int qtdAtual, Categoria categoria, Double valorTotal, int qtdEntrada, int qtdSaida) {
+    public Produto(int id, String nome, String unidade, double preco, int quantidade,int min, int max, String categoria) {
         this.id = id;
         this.nome = nome;
         this.unidade = unidade;
-        this.valorUnitario = valorUnitario;
-        this.qtdMin = qtdMin;
-        this.qtdMax = qtdMax;
-        this.qtdAtual = qtdAtual;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.min = min;
+        this.max = max;
         this.categoria = categoria;
-        this.valorTotal = valorTotal;
-        this.qtdEntrada = qtdEntrada;
-        this.qtdSaida = qtdSaida;
+        dao = new ProdutoDAO();
     }
-
-    public Produto(String nome, String unidade, Double valorUnitario,
-            int qtdMin, int qtdMax, int qtdAtual, Categoria categoria, int qtdEntrada, int qtdSaida) {
-        this.nome = nome;
-        this.unidade = unidade;
-        this.valorUnitario = valorUnitario;
-        this.qtdMin = qtdMin;
-        this.qtdMax = qtdMax;
-        this.qtdAtual = qtdAtual;
-        this.categoria = categoria;
-        this.qtdEntrada = qtdEntrada;
-        this.qtdSaida = qtdSaida;
-    }
+    
 
     public int getId() {
         return id;
@@ -69,89 +55,129 @@ public class Produto {
         this.unidade = unidade;
     }
 
-    public Double getValorUnitario() {
-        return valorUnitario;
+    public double getPreco() {
+        return preco;
     }
 
-    public void setValorUnitario(Double valorUnitario) {
-        this.valorUnitario = valorUnitario;
+    public void setPreco(double preco) {
+        this.preco = preco;
+    }
+    public int getQuantidade(){
+        return quantidade;
+    }
+    
+    public void setQuantidade(int quantidade){
+        this.quantidade = quantidade;  
     }
 
-    public int getQtdMin() {
-        return qtdMin;
+    public int getMin() {
+        return min;
     }
 
-    public void setQtdMin(int qtdMin) {
-        this.qtdMin = qtdMin;
+    public void setMin(int min) {
+        this.min = min;
     }
 
-    public int getQtdMax() {
-        return qtdMax;
+    public int getMax() {
+        return max;
     }
 
-    public void setQtdMax(int qtdMax) {
-        this.qtdMax = qtdMax;
+    public void setMax(int max) {
+        this.max = max;
     }
 
-    public int getQtdAtual() {
-        return qtdAtual;
-    }
-
-    public void setQtdAtual(int qtdAtual) {
-        this.qtdAtual = qtdAtual;
-    }
-
-    public Categoria getCategoria() {
+    public String getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void setCategoria(String nomeCategoria) {
+        this.categoria = nomeCategoria;
     }
-
-    public String getNomeCategoria() {
-        return categoria != null ? categoria.getNome() : "Sem categoria";
-    }
-
     @Override
-    public String toString() {
-        return nome + " (" + unidade + ")";
+    public String toString(){
+        return this.nome;
     }
-
-    public Double getValor() {
-        return getValorUnitario();
+    
+    public String VerificacaoDeQuantidade(){
+        if (this.getQuantidade()<this.getMin()){
+            return "A quantidade do produto: "+getNome()+" /está muito baixa, a quantidade minima é "+getMin()+" unidades";
+            
+        }else if(this.getQuantidade()>this.getMax()){
+            return "A quantidade do produto:"+getNome()+" /é muito alta, a quantidade máxima é "+getMax()+" unidades";
+        }else{
+            return "produto registrado com sucesso. A quantidade é "+getQuantidade()+" unidades";
+        }
     }
+     
+    public void cadastrarProduto(int id, String nome, String unidade,int quantidade, double preco, int min, int max, String categoria) {
+        this.id = id;
+        this.nome = nome;
+        this.unidade = unidade;
+        this.quantidade = quantidade;
+        this.preco = preco;
+        this.min = min;
+        this.max = max;
+        this.categoria = categoria;
 
-    public int getQtMax() {
-        return getQtdMax();
+        System.out.println("Produto cadastrado com sucesso: " + this.nome);
     }
-
-    public int getQtEstoque() {
-        return getQtdAtual();
+    public void RegistrarEntrada(int quantidade){
+        if(quantidade>0){
+            this.quantidade += quantidade;
+            System.out.println("Entrada registrada: +"+quantidade +"unidades para o produto "+this.nome);
+            System.out.println(VerificacaoDeQuantidade());
+            
+        }else{
+            System.out.println("Erro: A quantidade de entrada deve ser maior que zero");
+        }
     }
-
-    public int getQtMin() {
-        return getQtdMin();
+    public void RegistrarSaida(int quantidade){
+        if (quantidade > 0){
+            if(this.quantidade >= quantidade){
+                this.quantidade -= quantidade;
+                System.out.println("Saída Registrada: -"+quantidade+" unidades do produto "+this.nome);
+                System.out.println(VerificacaoDeQuantidade());
+                
+            }else{
+                System.out.println("Erro: Estoque insuficente para o produto"+this.nome);
+            }
+        }else{
+            System.out.println("Erro: Aa quantidade de saída deve ser maior que zero.");
+        }
+        
     }
-
-    public void setValorTotal(Double valorTotal) {
-        this.valorTotal = valorTotal;
+    
+    public boolean RegistrarProduto(String nome,String unidade,double preco,int quantidade,int min, int max,String categoria){
+        int id = dao.MaiorID()+1;
+        
+        Produto NovoProduto = new Produto(id,nome,unidade, preco,quantidade,min,max,categoria);
+        
+        dao.CadastrarProduto(NovoProduto);
+        return true;
+        
+        
     }
-
-    public int getQtdEntrada() {
-        return qtdEntrada;
+    public boolean AtualizarProduto(int id, String nome,String unidade, double preco,int quantidade, int min, int max, String categoria){
+        Produto ProdutoAtualizado = new Produto(id,nome,unidade,preco,quantidade,min,max,categoria);
+        dao.AtualizarProduto(ProdutoAtualizado);
+        return true;
     }
-
-    public void setQtdEntrada(int qtdEntrada) {
-        this.qtdEntrada = qtdEntrada;
+    public boolean DeletarProduto(int id){
+        return dao.DeletarProdutoID(id);
+        
     }
-
-    public int getQtdSaida() {
-        return qtdSaida;
+    public Produto ProcurarProdutoId(int id){
+        return dao.ProcurarProdutoID(id);
+        
     }
-
-    public void setQtdSaida(int qtdSaida) {
-        this.qtdSaida = qtdSaida;
+    public Produto ProcurarProdutoNome(String nome){
+        return dao.ProcurarProdutoNome(nome);
+        
     }
-
+    public ArrayList<Produto>getMinhaLista(){
+        return dao.getMinhaListaProdutos();
+        
+    }
+            
 }
+
