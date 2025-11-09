@@ -1,30 +1,35 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package visao;
 
-import dao.ProdutoDAO;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Produto;
-
+import service.EstoqueService; 
 
 public class FrmListaDePreco extends javax.swing.JFrame {
 
-    
     public FrmListaDePreco() {
         initComponents();
         carregarTabela();
     }
 
-    public void carregarTabela() {
-        ProdutoDAO dao = new ProdutoDAO();
-        List<Produto> lista = dao.listarProdutoOrdenadoPorNome();
+    private void carregarTabela() {
+        List<Produto> lista = null; 
+
+       try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+            lista = service.listarProdutos();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar lista de preços: " + e.getMessage());
+            return;
+        }
 
         DefaultTableModel modelo = (DefaultTableModel) JTListaDePreco.getModel();
-        modelo.setRowCount(0); 
+        modelo.setRowCount(0);
 
         for (Produto p : lista) {
             modelo.addRow(new Object[]{
@@ -36,6 +41,7 @@ public class FrmListaDePreco extends javax.swing.JFrame {
             });
         }
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -131,12 +137,22 @@ public class FrmListaDePreco extends javax.swing.JFrame {
 
         int idProduto = Integer.parseInt(JTListaDePreco.getValueAt(linhaSelecionada, 0).toString());
 
-        ProdutoDAO dao = new ProdutoDAO();
-        Produto produto = dao.ProcurarProdutoID(idProduto);
+        Produto produto = null;
+
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+            produto = service.buscarProdutoPorId(idProduto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao buscar produto: " + e.getMessage());
+            return;
+        }
 
         FrmCadastrodeProduto editarProduto = new FrmCadastrodeProduto(this, produto);
         editarProduto.setVisible(true);
         this.setVisible(false);
+
     }//GEN-LAST:event_JBEditarActionPerformed
 
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
