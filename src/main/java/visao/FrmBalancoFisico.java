@@ -1,12 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package visao;
-import dao.ProdutoDAO;
+
 import modelo.Produto;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import service.EstoqueService;
 
 /**
  *
@@ -14,15 +13,22 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrmBalancoFisico extends javax.swing.JFrame {
 
-    
     public FrmBalancoFisico() {
         initComponents();
         carregarTabelaBalanco();
     }
 
     private void carregarTabelaBalanco() {
-        ProdutoDAO dao = new ProdutoDAO();
-        List<Produto> lista = dao.listarProdutoOrdenadoPorNome();
+        List<Produto> lista = null;
+
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+            lista = service.listarProdutos();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         DefaultTableModel modelo = (DefaultTableModel) JTBalanco.getModel();
         modelo.setRowCount(0);
 
@@ -43,6 +49,7 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
 
         JLTotal.setText("Total do estoque: R$ " + String.format("%.2f", totalEstoque));
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -168,13 +175,20 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
     }//GEN-LAST:event_JBFecharActionPerformed
 
     private void JTFBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTFBuscarActionPerformed
-    
+
     }//GEN-LAST:event_JTFBuscarActionPerformed
 
     private void JBFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFiltrarActionPerformed
-         String texto = JTFBuscar.getText().trim().toLowerCase();
-        ProdutoDAO dao = new ProdutoDAO();
-        List<Produto> lista = dao.listarProdutoOrdenadoPorNome();
+        String texto = JTFBuscar.getText().trim().toLowerCase();
+        List<Produto> lista = null;
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+            lista = service.listarProdutos();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         DefaultTableModel modelo = (DefaultTableModel) JTBalanco.getModel();
         modelo.setRowCount(0);
 
@@ -232,7 +246,9 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
             }
         });
     }
-    public class BalancoFisico{
+
+    public class BalancoFisico {
+
         public int id;
         public String nome;
         public String categoria;

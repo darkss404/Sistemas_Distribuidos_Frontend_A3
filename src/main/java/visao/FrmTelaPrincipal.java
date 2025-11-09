@@ -1,10 +1,6 @@
 
 package visao;
 
-/**
- *
- * @author berna
- */
 public class FrmTelaPrincipal extends javax.swing.JFrame {
 
     /**

@@ -1,22 +1,20 @@
 package visao;
 
-import dao.CategoriaDAO;
-import dao.ProdutoDAO;
-import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JOptionPane;
 import modelo.Categoria;
 import modelo.Produto;
 import javax.swing.JFrame;
-
-
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import service.EstoqueService;
 
 public class FrmCadastrodeProduto extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmCadastrodeProduto.class.getName());
-    
+
     private FrmListadeProduto telaLista;
-    
+
     public FrmCadastrodeProduto(JFrame telaAnterior) {
         initComponents();
         this.telaAnterior = telaAnterior;
@@ -24,7 +22,6 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
         carregarCategoriasDoBanco();
     }
 
-// Para edição
     public FrmCadastrodeProduto(JFrame telaAnterior, Produto produto) {
         initComponents();
         this.telaAnterior = telaAnterior;
@@ -41,11 +38,9 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
         JCBCategoria.setSelectedItem(produto.getCategoria());
         JBSalvar.setText("Atualizar");
     }
-        
-        
-    
+
     private Produto produtoEmEdicao;
-    
+
     private javax.swing.JFrame telaAnterior;
 
     @SuppressWarnings("unchecked")
@@ -196,7 +191,7 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
                 || JCBCategoria.getSelectedItem() == null) {
 
             JOptionPane.showMessageDialog(this,
-                    "Por favor, preencha todos os campos antes de salvar.",
+                    "preencha todos os campos antes de salvar.",
                     "Campos obrigatórios",
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -228,46 +223,40 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
             String unidade = JTFUnidade.getText();
             String categoria = JCBCategoria.getSelectedItem().toString();
 
-            ProdutoDAO dao = new ProdutoDAO();
-            boolean sucesso;
-
-            if (produtoEmEdicao == null) {
-                Produto novoProduto = new Produto(0, nome, unidade, preco, quantidade, min, max, categoria);
-                sucesso = dao.CadastrarProduto(novoProduto);
-            } else {
-                produtoEmEdicao.setNome(nome);
-                produtoEmEdicao.setUnidade(unidade);
-                produtoEmEdicao.setPreco(preco);
-                produtoEmEdicao.setQuantidade(quantidade);
-                produtoEmEdicao.setMin(min);
-                produtoEmEdicao.setMax(max);
-                produtoEmEdicao.setCategoria(categoria);
-                sucesso = dao.AtualizarProduto(produtoEmEdicao);
+            Produto produto = new Produto(0, nome, unidade, preco, quantidade, min, max, categoria);
+            if (produtoEmEdicao != null) {
+                produto.setId(produtoEmEdicao.getId());
             }
 
-            if (sucesso) {
-                JOptionPane.showMessageDialog(this,
-                        produtoEmEdicao == null ? "Produto cadastrado com sucesso!" : "Produto atualizado com sucesso!");
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
 
-                if (telaAnterior instanceof FrmListaDePreco precoTela) {
-                    precoTela.carregarTabela(); 
-                    precoTela.setVisible(true);
-                } else if (telaAnterior instanceof FrmListadeProduto produtoTela) {
-                    produtoTela.carregarTabelaProdutos(); 
-                    produtoTela.setVisible(true);
-                }
-                this.dispose(); 
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Erro ao cadastrar produto.",
-                        "Erro",
-                        JOptionPane.ERROR_MESSAGE);
+            service.salvarProduto(produto);
+
+            JOptionPane.showMessageDialog(this,
+                    produtoEmEdicao == null ? "Produto cadastrado com sucesso!" : "Produto atualizado com sucesso!");
+
+            if (telaAnterior instanceof FrmListadeProduto telaProd) {
+                telaProd.carregarTabelaProdutos();
+                telaProd.setVisible(true);
+            } else if (telaAnterior instanceof FrmListaDePreco telaPreco) {
+                telaPreco.carregarTabela();
+                telaPreco.setVisible(true);
             }
+
+            this.dispose();
+
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Erro: Preço, Quantidade, Mínimo e Máximo devem conter apenas números válidos.",
+                    "Preço, Quantidade, Mínimo e Máximo devem conter apenas números válidos.",
                     "Erro de validação",
                     JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao salvar produto" + e.getMessage(),
+                    "Erro de conexão",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_JBSalvarActionPerformed
 
@@ -307,36 +296,40 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new FrmCadastrodeProduto((javax.swing.JFrame) null, null).setVisible(true));
     }
-    
+
     private void carregarCategoriasDoBanco() {
-    try {
-        CategoriaDAO dao = new CategoriaDAO();
-        List<Categoria> lista = dao.listarCategorias();
-        JCBCategoria.removeAllItems();
-        for (Categoria c : lista) {
-            JCBCategoria.addItem(c.getNomeCategoria());
-        }
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
 
-        if (produtoEmEdicao != null) {
-            String cat = produtoEmEdicao.getCategoria();
-            boolean existe = false;
-            for (int i = 0; i < JCBCategoria.getItemCount(); i++) {
-                if (JCBCategoria.getItemAt(i).equals(cat)) {
-                    existe = true;
-                    break;
+            List<Categoria> lista = service.listarCategorias();
+            JCBCategoria.removeAllItems();
+
+            for (Categoria c : lista) {
+                JCBCategoria.addItem(c.getNomeCategoria());
+            }
+
+            if (produtoEmEdicao != null) {
+                String cat = produtoEmEdicao.getCategoria();
+                boolean existe = false;
+                for (int i = 0; i < JCBCategoria.getItemCount(); i++) {
+                    if (JCBCategoria.getItemAt(i).equals(cat)) {
+                        existe = true;
+                        break;
+                    }
                 }
+                if (!existe && cat != null && !cat.isBlank()) {
+                    JCBCategoria.addItem(cat);
+                }
+                JCBCategoria.setSelectedItem(cat);
             }
-            if (!existe && cat != null && !cat.isBlank()) {
-                JCBCategoria.addItem(cat);
-            }
-            JCBCategoria.setSelectedItem(cat);
-        }
 
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Erro ao carregar categorias: " + e.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar categorias" + e.getMessage());
+            e.printStackTrace();
+        }
     }
-  }
-  
+
     private void limparCampos() {
         JTFNome.setText("");
         JTFPreco.setText("");

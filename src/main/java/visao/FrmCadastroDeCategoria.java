@@ -1,27 +1,25 @@
 package visao;
 
-import dao.CategoriaDAO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import modelo.Categoria;
-
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import service.EstoqueService;
 
 public class FrmCadastroDeCategoria extends javax.swing.JFrame {
 
     private JFrame janelaAnterior;
     private int idCategoria = 0;
 
-
     public FrmCadastroDeCategoria() {
         initComponents();
     }
-
 
     public FrmCadastroDeCategoria(JFrame janelaAnterior) {
         this.janelaAnterior = janelaAnterior;
         initComponents();
     }
-
 
     public FrmCadastroDeCategoria(JFrame janelaAnterior, Categoria categoria) {
         this.janelaAnterior = janelaAnterior;
@@ -31,8 +29,7 @@ public class FrmCadastroDeCategoria extends javax.swing.JFrame {
         JCBEmbalagem.setSelectedItem(categoria.getEmbalagem());
         this.idCategoria = categoria.getId();
     }
-   
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -182,53 +179,50 @@ public class FrmCadastroDeCategoria extends javax.swing.JFrame {
                 return;
             }
 
-            Categoria categoria = new Categoria(nome, tamanho, embalagem); 
-            CategoriaDAO dao = new CategoriaDAO();
-            
+            Categoria categoria = new Categoria(nome, tamanho, embalagem);
+            categoria.setId(idCategoria);
+
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+
             if (idCategoria == 0) {
-                dao.salvar(categoria); 
+                service.salvarCategoria(categoria);
                 JOptionPane.showMessageDialog(this, "Categoria salva com sucesso!");
             } else {
-                categoria.setId(idCategoria); 
-                dao.atualizar(categoria);
+                service.salvarCategoria(categoria); 
                 JOptionPane.showMessageDialog(this, "Categoria atualizada com sucesso!");
             }
-
-            JOptionPane.showMessageDialog(this, "Categoria salva com sucesso!");
 
             if (janelaAnterior instanceof FrmListadeCategoria) {
                 ((FrmListadeCategoria) janelaAnterior).carregarTabela();
                 janelaAnterior.setVisible(true);
             }
 
-            this.dispose(); 
+            this.dispose();
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao salvar: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Erro ao salvar via RMI: " + e.getMessage());
             e.printStackTrace();
         }
     }//GEN-LAST:event_JBSalvarActionPerformed
 
     private void JBLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBLimparActionPerformed
-        JTFNomeCategoria.setText("");          
-        JCBTamanho.setSelectedIndex(0);        
-        JCBEmbalagem.setSelectedIndex(0);      
+        JTFNomeCategoria.setText("");
+        JCBTamanho.setSelectedIndex(0);
+        JCBEmbalagem.setSelectedIndex(0);
 
-        JTFNomeCategoria.requestFocus();       
+        JTFNomeCategoria.requestFocus();
     }//GEN-LAST:event_JBLimparActionPerformed
 
     private void JBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBCancelarActionPerformed
         if (janelaAnterior != null) {
-            janelaAnterior.setVisible(true); 
+            janelaAnterior.setVisible(true);
         }
-        this.dispose(); 
+        this.dispose();
     }//GEN-LAST:event_JBCancelarActionPerformed
 
-  
     public static void main(String args[]) {
-       
 
-       
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new FrmCadastroDeCategoria().setVisible(true);
