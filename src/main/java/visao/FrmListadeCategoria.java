@@ -1,49 +1,57 @@
 package visao;
 
 import modelo.Categoria;
-import dao.CategoriaDAO;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import service.EstoqueService;
 
 public class FrmListadeCategoria extends javax.swing.JFrame {
 
     private JFrame janelaAnterior;
+
     public FrmListadeCategoria(JFrame janelaAnterior) {
         this.janelaAnterior = janelaAnterior;
         initComponents();
         carregarTabela();
     }
+
     public FrmListadeCategoria() {
         initComponents();
         carregarTabela();
     }
-    
-    public void carregarTabela() {
-        
-        try {
-      
-        CategoriaDAO dao = new CategoriaDAO();
-        List<Categoria> lista = dao.listarCategorias();
-        
-        DefaultTableModel modelo = (DefaultTableModel) JTListaCategoria.getModel();
-        modelo.setRowCount(0);
 
-        for (Categoria c : lista) {
-            modelo.addRow(new Object[]{
-                c.getId(), 
-                c.getNomeCategoria(),
-                c.getTamanho(),
-                c.getEmbalagem()               
-            });
+    public void carregarTabela() {
+
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+
+            List<Categoria> lista = service.listarCategorias();
+
+            DefaultTableModel modelo = (DefaultTableModel) JTListaCategoria.getModel();
+            modelo.setRowCount(0);
+
+            for (Categoria c : lista) {
+                modelo.addRow(new Object[]{
+                    c.getId(),
+                    c.getNomeCategoria(),
+                    c.getTamanho(),
+                    c.getEmbalagem()
+                });
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar categorias: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Erro ao carregar categorias: " + e.getMessage());
     }
-    }      
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -201,20 +209,22 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
         int idCategoria = (int) JTListaCategoria.getValueAt(linhaSelecionada, 0); // ID na coluna 0
 
         try {
-            CategoriaDAO dao = new CategoriaDAO();
-            dao.excluir(idCategoria);
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
 
+            service.excluirCategoria(idCategoria);
             JOptionPane.showMessageDialog(this, "Categoria excluída com sucesso!");
             carregarTabela();
 
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao excluir categoria: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Erro ao excluir categoria: " + e.getMessage(),
+                "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_JBExcluirActionPerformed
 
-  
     public static void main(String args[]) {
-    
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new FrmListadeCategoria().setVisible(true);

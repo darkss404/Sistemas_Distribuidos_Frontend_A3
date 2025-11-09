@@ -15,7 +15,7 @@ public class FrmListaDePreco extends javax.swing.JFrame {
         carregarTabela();
     }
 
-    private void carregarTabela() {
+    public void carregarTabela() {
         List<Produto> lista = null; 
 
        try {
