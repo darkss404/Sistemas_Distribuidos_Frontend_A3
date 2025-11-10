@@ -1,8 +1,8 @@
 package visao;
 
-
-import dao.CategoriaDAO;
-import dao.ProdutoDAO;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import service.EstoqueService;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
@@ -11,11 +11,8 @@ import javax.swing.JFrame;
 import modelo.Categoria;
 import modelo.Produto;
 
-        
-        
 public class FrmListadeProduto extends javax.swing.JFrame {
 
-    
     public FrmListadeProduto() {
         initComponents();
         carregarTabelaProdutos();
@@ -24,11 +21,12 @@ public class FrmListadeProduto extends javax.swing.JFrame {
 
     private void carregarCategoriasNoFiltro() {
         try {
-            CategoriaDAO dao = new CategoriaDAO();
-            List<Categoria> categorias = dao.listarCategorias();
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+            List<Categoria> categorias = service.listarCategorias();
 
             JCBCategoria.removeAllItems();
-            JCBCategoria.addItem("Todas"); 
+            JCBCategoria.addItem("Todas");
 
             for (Categoria c : categorias) {
                 JCBCategoria.addItem(c.getNomeCategoria());
@@ -37,7 +35,7 @@ public class FrmListadeProduto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Erro ao carregar categorias: " + e.getMessage());
         }
     }
-    
+
     private JFrame janelaAnterior;
 
     public FrmListadeProduto(JFrame janelaAnterior) {
@@ -45,6 +43,7 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         initComponents();
         carregarCategoriasNoFiltro();
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -229,27 +228,32 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     }//GEN-LAST:event_JCBCategoriaActionPerformed
 
     private void JBFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFiltrarActionPerformed
-        String nomeBuscado = JTFBuscar.getText().trim(); 
-        String categoriaSelecionada = JCBCategoria.getSelectedItem().toString(); 
+        String nomeBuscado = JTFBuscar.getText().trim().toLowerCase();
+        String categoriaSelecionada = JCBCategoria.getSelectedItem().toString();
 
         try {
-            ProdutoDAO dao = new ProdutoDAO();
-            List<Produto> produtos;
+            // Conecta ao RMI
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
 
-            if (categoriaSelecionada.equals("Todas") && nomeBuscado.isEmpty()) {
-                produtos = dao.getMinhaListaProdutos();
-            } else if (categoriaSelecionada.equals("Todas")) {
-                produtos = dao.buscarPorNome(nomeBuscado);
-            } else if (nomeBuscado.isEmpty()) {
-                produtos = dao.buscarPorCategoria(categoriaSelecionada);
-            } else {
-                produtos = dao.buscarPorNomeECategoria(nomeBuscado, categoriaSelecionada);
+            // Busca todos os produtos via RMI
+            List<Produto> produtos = service.listarProdutos();
+
+            // Filtra localmente
+            List<Produto> produtosFiltrados = new ArrayList<>();
+            for (Produto p : produtos) {
+                boolean nomeConfere = nomeBuscado.isEmpty() || p.getNome().toLowerCase().contains(nomeBuscado);
+                boolean categoriaConfere = categoriaSelecionada.equals("Todas") || p.getCategoria().equalsIgnoreCase(categoriaSelecionada);
+                if (nomeConfere && categoriaConfere) {
+                    produtosFiltrados.add(p);
+                }
             }
 
+            // Atualiza tabela
             DefaultTableModel modelo = (DefaultTableModel) JTTabelaProdutos.getModel();
             modelo.setRowCount(0);
 
-            for (Produto p : produtos) {
+            for (Produto p : produtosFiltrados) {
                 modelo.addRow(new Object[]{
                     p.getId(),
                     p.getNome(),
@@ -258,9 +262,10 @@ public class FrmListadeProduto extends javax.swing.JFrame {
                     p.getCategoria()
                 });
             }
-
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao filtrar produtos: " + e.getMessage());
+            e.printStackTrace();
+
         }
     }//GEN-LAST:event_JBFiltrarActionPerformed
 
@@ -271,7 +276,7 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     }//GEN-LAST:event_JBNovoProdutoActionPerformed
 
     private void JBVoltarLPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBVoltarLPActionPerformed
-        janelaAnterior.setVisible(true); 
+        janelaAnterior.setVisible(true);
         dispose();
     }//GEN-LAST:event_JBVoltarLPActionPerformed
 
@@ -286,44 +291,71 @@ public class FrmListadeProduto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Selecione um produto para editar.");
             return;
         }
-        int idProduto = Integer.parseInt(JTTabelaProdutos.getValueAt(linhaSelecionada, 0).toString());
-       
-        ProdutoDAO dao = new ProdutoDAO();
-        Produto produto = dao.ProcurarProdutoID(idProduto);
 
-        FrmCadastrodeProduto editarProduto = new FrmCadastrodeProduto(this, produto);
-        editarProduto.setVisible(true);
-        
-        this.setVisible(false);
+        try {
+            int idProduto = Integer.parseInt(JTTabelaProdutos.getValueAt(linhaSelecionada, 0).toString());
+
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+
+            Produto produto = service.buscarProdutoPorId(idProduto);
+
+            if (produto != null) {
+                FrmCadastrodeProduto editarProduto = new FrmCadastrodeProduto(this, produto);
+                editarProduto.setVisible(true);
+                this.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "Produto não encontrado.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao editar produto: " + e.getMessage());
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_JBEditarActionPerformed
 
     private void formComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_formComponentAdded
-        
+
     }//GEN-LAST:event_formComponentAdded
 
     private void JBExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBExcluirActionPerformed
-        int linhaSelecionada = JTTabelaProdutos.getSelectedRow();
+      int linhaSelecionada = JTTabelaProdutos.getSelectedRow();
 
-        if (linhaSelecionada != -1) {
-            int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir este produto?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+    if (linhaSelecionada == -1) {
+        JOptionPane.showMessageDialog(this, "Selecione um produto para excluir.");
+        return;
+    }
 
-            if (confirmacao == JOptionPane.YES_OPTION) {
-                int idProduto = (int) JTTabelaProdutos.getValueAt(linhaSelecionada, 0);
+    int confirmacao = JOptionPane.showConfirmDialog(
+            this,
+            "Tem certeza que deseja excluir este produto?",
+            "Confirmar Exclusão",
+            JOptionPane.YES_NO_OPTION);
 
-                ProdutoDAO dao = new ProdutoDAO();
-                boolean sucesso = dao.DeletarProdutoID(idProduto);
+    if (confirmacao != JOptionPane.YES_OPTION) {
+        return;
+    }
 
-                if (sucesso) {
-                    JOptionPane.showMessageDialog(null, "Produto excluído com sucesso!");
-                    carregarTabelaProdutos();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Erro ao excluir o produto.");
-                }
-            }
+    try {
+        int idProduto = (int) JTTabelaProdutos.getValueAt(linhaSelecionada, 0);
+
+        Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+        EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+
+        // Chama o método RMI que retorna boolean
+        boolean sucesso = service.DeletarProdutoID(idProduto);
+
+        if (sucesso) {
+            JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!");
+            carregarTabelaProdutos(); // ou carregarTabela(), conforme o seu método
         } else {
-            JOptionPane.showMessageDialog(null, "Selecione um produto para excluir.");
+            JOptionPane.showMessageDialog(this, "Erro ao excluir o produto.");
         }
 
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Erro ao excluir produto: " + e.getMessage());
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_JBExcluirActionPerformed
 
     private void JBReajustarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBReajustarActionPerformed
@@ -332,14 +364,20 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_JBReajustarActionPerformed
 
-    public void carregarTabelaProdutos() {
-        ProdutoDAO dao = new ProdutoDAO();
-        ArrayList<Produto> lista = dao.getMinhaListaProdutos();
+   public void carregarTabelaProdutos() {
+    try {
+        // Conecta ao servidor RMI
+        Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+        EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
 
+        // Busca lista de produtos via RMI
+        List<Produto> lista = service.listarProdutos();
 
+        // Prepara a tabela
         DefaultTableModel modelo = (DefaultTableModel) JTTabelaProdutos.getModel();
         modelo.setRowCount(0);
 
+        // Preenche os dados
         for (Produto p : lista) {
             System.out.println("Categoria do produto carregado: " + p.getCategoria());
             modelo.addRow(new Object[]{
@@ -350,6 +388,11 @@ public class FrmListadeProduto extends javax.swing.JFrame {
                 p.getCategoria()
             });
         }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
+        e.printStackTrace();
+    }
     }
 
     public static void main(String args[]) {
