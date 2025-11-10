@@ -1,24 +1,24 @@
-
 package visao;
 
-
-import dao.ProdutoDAO;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Produto;
 import modelo.RegistroMovimentacao;
-import dao.RegistroMovimentacaoDAO;
 import java.time.LocalDate;
-
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import service.EstoqueService;
 
 public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
     private javax.swing.JFrame janelaAnterior;
-   
+    private EstoqueService service;
+
     public FrmMovimentacaoDeEstoque(javax.swing.JFrame janelaAnterior) {
         this.janelaAnterior = janelaAnterior;
         initComponents();
+        conectarComServidor();
         carregarProdutosNoCombo();
         JTFData.setText(LocalDate.now().toString());
         JTFData.setEditable(false);
@@ -27,76 +27,72 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         grupoTipoMovimentacao.add(JRBSaida);
         atualizarTabelaMovimentacoes();
     }
-    
-    private void registrarMovimentacao(String tipo) {
+
+    private void conectarComServidor() {
         try {
-            String nomeProduto = (String) JCBProduto.getSelectedItem();
-            int quantidade = Integer.parseInt(JTFQuantidade.getText());
-
-            ProdutoDAO produtoDAO = new ProdutoDAO();
-            Produto produto = produtoDAO.ProcurarProdutoNome(nomeProduto);
-
-            if (produto.getId() == 0) {
-                JOptionPane.showMessageDialog(this, "Produto não encontrado.");
-                return;
-            }
-
-            boolean sucesso = false;
-
-            if (tipo.equals("Entrada")) {
-                sucesso = produtoDAO.RegistrarEntradaProduto(produto.getId(), quantidade, "");
-            } else if (tipo.equals("Saída")) {
-                if (produto.getQuantidade() < quantidade) {
-                    JOptionPane.showMessageDialog(this, "Estoque insuficiente para saída.");
-                    return;
-                }
-                sucesso = produtoDAO.RegistrarSaidaProduto(produto.getId(), quantidade, "");
-            }
-
-            if (sucesso) {
-                // Criação do registro de movimentação
-                RegistroMovimentacao registro = new RegistroMovimentacao(
-                        0, // id (auto-incremento no banco)
-                        produto.getId(), // produto_id
-                        tipo, // tipo_movimentacao
-                        quantidade, // quantidade
-                        "", // observacao (vazio)
-                        LocalDate.now().toString() // data_movimentacao
-                );
-
-                RegistroMovimentacaoDAO registroDAO = new RegistroMovimentacaoDAO();
-                System.out.println("Chamando o DAO para registrar movimentação...");
-                registroDAO.registrarMovimentacao(registro);
-                System.out.println("Movimentação enviada para o DAO");
-                
-
-                JOptionPane.showMessageDialog(this, tipo + " registrada com sucesso!");
-                atualizarTabelaMovimentacoes();
-            } else {
-                JOptionPane.showMessageDialog(this, "Falha ao registrar a " + tipo.toLowerCase() + ".");
-            }
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Informe uma quantidade válida.");
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            service = (EstoqueService) registro.lookup("EstoqueService");
+            System.out.println("Conectado ao servidor");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao registrar movimentação: " + e.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao conectar" + e.getMessage(),
+                    "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
-    
+
+    private void registrarMovimentacao(String tipo) {
+    try {
+        String nomeProduto = (String) JCBProduto.getSelectedItem();
+        if (nomeProduto == null || nomeProduto.trim().isEmpty() || nomeProduto.equals("Nenhum produto")) {
+            JOptionPane.showMessageDialog(this, "Selecione um produto válido.");
+            return;
+        }
+
+        int quantidade = Integer.parseInt(JTFQuantidade.getText());
+
+        Produto produto = service.buscarProdutoPorNome(nomeProduto);
+        if (produto == null || produto.getId() == 0) {
+            JOptionPane.showMessageDialog(this, "Produto não encontrado no servidor.");
+            return;
+        }
+
+        boolean sucesso;
+        if (tipo.equals("Entrada")) {
+            sucesso = service.registrarEntradaProduto(produto.getId(), quantidade);
+        } else { // Saída
+            if (produto.getQuantidade() < quantidade) {
+                JOptionPane.showMessageDialog(this, "Estoque insuficiente para saída.");
+                return;
+            }
+            sucesso = service.registrarSaidaProduto(produto.getId(), quantidade);
+        }
+
+        if (sucesso) {
+            JOptionPane.showMessageDialog(this, tipo + " registrada com sucesso!");
+            atualizarTabelaMovimentacoes();
+        } else {
+            JOptionPane.showMessageDialog(this, "Falha ao registrar a " + tipo.toLowerCase() + ".");
+        }
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Informe uma quantidade válida.");
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Erro ao registrar movimentação: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
+
     private void atualizarTabelaMovimentacoes() {
-        
+
         try {
-            RegistroMovimentacaoDAO dao = new RegistroMovimentacaoDAO();
-            List<RegistroMovimentacao> lista = dao.listarTodasMovimentacoes();
+            List<RegistroMovimentacao> lista = service.listarMovimentacoes();
 
             DefaultTableModel model = (DefaultTableModel) JTMovimentacao.getModel();
-            model.setRowCount(0); // limpa a tabela
-
-            ProdutoDAO produtoDAO = new ProdutoDAO();
+            model.setRowCount(0);
 
             for (RegistroMovimentacao reg : lista) {
-                Produto produto = produtoDAO.ProcurarProdutoID(reg.getProdutoId());
+                Produto produto = service.buscarProdutoPorId(reg.getProdutoId());
                 String nomeProduto = (produto != null) ? produto.getNome() : "Produto não encontrado";
                 int saldoAtual = (produto != null) ? produto.getQuantidade() : 0;
                 String data = (reg.getDataMovimentacao() != null) ? reg.getDataMovimentacao() : "—";
@@ -115,22 +111,31 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-   
-    private void carregarProdutosNoCombo() {
-        ProdutoDAO dao = new ProdutoDAO();
-        List<Produto> lista = dao.listarProdutoOrdenadoPorNome();
 
-        JCBProduto.removeAllItems();
-        for (Produto p : lista) {
-            JCBProduto.addItem(p.getNome());
+    private void carregarProdutosNoCombo() {
+        try {
+            List<Produto> lista = service.listarProdutos();
+            JCBProduto.removeAllItems();
+            if (lista != null && !lista.isEmpty()) {
+                for (Produto p : lista) {
+                    JCBProduto.addItem(p.getNome());
+                }
+            } else {
+                JCBProduto.addItem("Nenhum produto");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
     private void limparCampos() {
         JTFQuantidade.setText("");
         JRBEntrada.setSelected(false);
         JRBSaida.setSelected(false);
         JCBProduto.setSelectedIndex(0);
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -317,7 +322,7 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
     }//GEN-LAST:event_JBSairActionPerformed
 
     private void JBRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBRegistrarActionPerformed
-       System.out.println("Botão Registrar clicado!");
+        System.out.println("Botão Registrar clicado!");
 
         String tipo = JRBEntrada.isSelected() ? "Entrada" : JRBSaida.isSelected() ? "Saída" : "";
         if (tipo.isEmpty()) {
@@ -325,7 +330,7 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
             return;
         }
 
-        registrarMovimentacao(tipo); 
+        registrarMovimentacao(tipo);
     }//GEN-LAST:event_JBRegistrarActionPerformed
 
     private void jScrollPane1AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jScrollPane1AncestorAdded
@@ -336,12 +341,9 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         JTFQuantidade.setText("");
         JRBEntrada.setSelected(false);
         JRBSaida.setSelected(false);
-        JCBProduto.setSelectedIndex(0); 
+        JCBProduto.setSelectedIndex(0);
     }//GEN-LAST:event_JBLimparActionPerformed
 
-
-    
-  
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

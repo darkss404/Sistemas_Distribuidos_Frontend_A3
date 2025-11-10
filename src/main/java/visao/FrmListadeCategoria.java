@@ -1,7 +1,6 @@
 package visao;
 
 import modelo.Categoria;
-import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;

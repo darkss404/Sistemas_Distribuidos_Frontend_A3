@@ -1,32 +1,69 @@
 
 package visao;
 
-import dao.ProdutoDAO;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import modelo.Produto;
+import service.EstoqueService;
 
 
 public class FrmQuantidadeDeProduto extends javax.swing.JFrame {
 
  private javax.swing.JFrame janelaAnterior;
+ private EstoqueService service;
    
     public FrmQuantidadeDeProduto(javax.swing.JFrame janelaAnterior) {
         this.janelaAnterior = janelaAnterior;
         initComponents();
         carregarDados();
+        conectarComServidor();
+        carregarDados();
+    }
+    
+    private void conectarComServidor() {
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            service = (EstoqueService) registro.lookup("EstoqueService");
+            System.out.println("✅ Conectado ao servidor RMI com sucesso!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao conectar com o servidor: " + e.getMessage(),
+                    "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
       private void carregarDados() {
-        ProdutoDAO dao = new ProdutoDAO();
-        List<String[]> lista = dao.listarQuantidadePorCategoria(); 
-        DefaultTableModel modelo = (DefaultTableModel) JTQuantidadeProdutoCategoria.getModel();
-        modelo.setRowCount(0); 
+        try {
+            List<Produto> lista = service.listarProdutos();
 
-        for (String[] linha : lista) {
-            modelo.addRow(new Object[]{linha[0], linha[1]}); 
+            Map<String, Integer> contagemPorCategoria = new HashMap<>();
+            for (Produto p : lista) {
+                String categoria = (p.getCategoria() != null && !p.getCategoria().isEmpty())
+                        ? p.getCategoria()
+                        : "Sem categoria";
+                contagemPorCategoria.put(categoria,
+                        contagemPorCategoria.getOrDefault(categoria, 0) + p.getQuantidade());
+            }
+
+            DefaultTableModel modelo = (DefaultTableModel) JTQuantidadeProdutoCategoria.getModel();
+            modelo.setRowCount(0);
+            for (Map.Entry<String, Integer> entry : contagemPorCategoria.entrySet()) {
+                modelo.addRow(new Object[]{entry.getKey(), entry.getValue()});
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar dados: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
       
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

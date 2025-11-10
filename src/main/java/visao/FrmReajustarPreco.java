@@ -1,28 +1,47 @@
 
 package visao;
 
-import dao.ProdutoDAO;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.List;
 import javax.swing.JOptionPane;
 import modelo.Produto;
+import service.EstoqueService;
 
 
 public class FrmReajustarPreco extends javax.swing.JFrame {
 
-   
+    private EstoqueService service;
+    private Produto produto;
+    private FrmListadeProduto telaAnterior;
+
     public FrmReajustarPreco() {
         initComponents();
         setLocationRelativeTo(null);
+        conectarComServidor();
         carregarProdutosNoCombo();
-        JTFPrecoAtual.setEditable (false);
-        JCBProduto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                atualizarPrecoAtual();
-            }
-        });
+        JTFPrecoAtual.setEditable(false);
+
+        JCBProduto.addActionListener(evt -> atualizarPrecoAtual());
     }
     
-    private Produto produto;
+    public FrmReajustarPreco(FrmListadeProduto telaAnterior) {
+        this();
+        this.telaAnterior = telaAnterior;
+    }
+    
+    private void conectarComServidor() {
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            service = (EstoqueService) registro.lookup("EstoqueService");
+            System.out.println("Conectado ao servidor RMI");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao conectar com o servidor: " + e.getMessage(),
+                    "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
 
     public FrmReajustarPreco(Produto produto) {
         initComponents();
@@ -34,27 +53,23 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
     }
     
     private void carregarProdutosNoCombo() {
-    try {
-        ProdutoDAO dao = new ProdutoDAO();
-        List<Produto> lista = dao.getMinhaListaProdutos();  
-
-        JCBProduto.removeAllItems(); 
-        for (Produto p : lista) {
-            JCBProduto.addItem(p.getNome());
+        try {
+            List<Produto> lista = service.listarProdutos();
+            JCBProduto.removeAllItems();
+            for (Produto p : lista) {
+                JCBProduto.addItem(p.getNome());
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
         }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
     }
-}
     
     private void atualizarPrecoAtual() {
         try {
             String nomeSelecionado = (String) JCBProduto.getSelectedItem();
             if (nomeSelecionado != null) {
-                ProdutoDAO dao = new ProdutoDAO();
-                Produto p = dao.ProcurarProdutoNome(nomeSelecionado);
-                if (p != null) {
-                    produto = p; 
+                produto = service.buscarProdutoPorNome(nomeSelecionado);
+                if (produto != null) {
                     JTFPrecoAtual.setText(String.format("R$ %.2f", produto.getPreco()));
                 }
             }
@@ -62,34 +77,6 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Erro ao atualizar preço atual: " + e.getMessage());
         }
     }
-
-    private FrmListadeProduto telaAnterior;
-    
-    public FrmReajustarPreco(FrmListadeProduto telaAnterior) {
-        initComponents();
-        setLocationRelativeTo(null);
-        this.telaAnterior = telaAnterior;
-        carregarProdutosNoCombo();
-        JTFPrecoAtual.setEditable(false);
-
-        
-        String nomeSelecionado = (String) JCBProduto.getSelectedItem();
-        if (nomeSelecionado != null) {
-            ProdutoDAO dao = new ProdutoDAO();
-            produto = dao.ProcurarProdutoNome(nomeSelecionado);
-            if (produto != null) {
-                JTFPrecoAtual.setText(String.format("R$ %.2f", produto.getPreco()));
-            }
-        }
-
-        JCBProduto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                atualizarPrecoAtual();
-            }
-        });
-    }
-    
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -210,27 +197,27 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBAumentarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBAumentarActionPerformed
-        try {
+         try {
             double percentual = Double.parseDouble(JTFPercentual.getText());
             double precoAtual = produto.getPreco();
             double novoPreco = precoAtual + (precoAtual * percentual / 100);
 
             produto.setPreco(novoPreco);
-            ProdutoDAO dao = new ProdutoDAO();
-            dao.atualizarPreco(produto.getId(), novoPreco);
+            service.salvarProduto(produto); // atualiza pelo RMI
 
             JOptionPane.showMessageDialog(null, "Preço aumentado com sucesso!");
-            dispose(); 
-            
+            dispose();
+
             if (telaAnterior != null) {
                 telaAnterior.setVisible(true);
-                telaAnterior.carregarTabelaProdutos(); 
+                telaAnterior.carregarTabelaProdutos();
             }
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Digite um percentual válido.");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao atualizar o preço: " + e.getMessage());
+            e.printStackTrace();
         }
     }//GEN-LAST:event_JBAumentarActionPerformed
 
@@ -246,21 +233,21 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
             }
 
             produto.setPreco(novoPreco);
-            ProdutoDAO dao = new ProdutoDAO();
-            dao.atualizarPreco(produto.getId(), novoPreco);
+            service.salvarProduto(produto);
 
             JOptionPane.showMessageDialog(null, "Preço reduzido com sucesso!");
             dispose();
-            
+
             if (telaAnterior != null) {
                 telaAnterior.setVisible(true);
-                telaAnterior.carregarTabelaProdutos(); 
+                telaAnterior.carregarTabelaProdutos();
             }
-            
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Digite um percentual válido.");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao atualizar o preço: " + e.getMessage());
+            e.printStackTrace();
         }
     }//GEN-LAST:event_JBReduzirActionPerformed
 

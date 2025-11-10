@@ -1,6 +1,5 @@
 package visao;
 
-import dao.ProdutoDAO;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -8,97 +7,84 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import modelo.Produto;
-
-
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import service.EstoqueService;
+import modelo.Categoria;
 
 public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
 
-    private JComboBox<String> comboCategoria;
-    private JButton btnBuscar, btnFechar;
-    private JTable tabela;
-    private DefaultTableModel modeloTabela;
     private javax.swing.JFrame janelaAnterior;
-   
+    private EstoqueService service;
+
     public FrmProdutoAbaixoDoMin(javax.swing.JFrame janelaAnterior) {
         this.janelaAnterior = janelaAnterior;
         initComponents();
-        modeloTabela = (DefaultTableModel) JTProdutoAbaixo.getModel();
-        btnBuscar = JBBuscar;
-        tabela = JTProdutoAbaixo;
+        conectarComServidor();
         carregarCategorias();
         buscarProdutos();
-        JTProdutoAbaixo.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
-            @Override
-            public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
+    }
 
-                java.awt.Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-                try {
-                    int quantidade = Integer.parseInt(table.getValueAt(row, 2).toString());
-                    int minimo = Integer.parseInt(table.getValueAt(row, 3).toString());
-                    int maximo = Integer.parseInt(table.getValueAt(row, 4).toString());
-
-                    if (quantidade < minimo) {
-                        c.setBackground(new java.awt.Color(255, 102, 102)); // vermelho claro
-                    } else if (quantidade > maximo) {
-                        c.setBackground(new java.awt.Color(255, 178, 102)); // laranja
-                    }
-                } catch (Exception e) {
-                    c.setBackground(java.awt.Color.WHITE); // fallback
-                }
-
-                if (isSelected) {
-                    c.setBackground(c.getBackground().darker());
-                }
-
-                return c;
-            }
-        });
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
+    private void conectarComServidor() {
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            service = (EstoqueService) registro.lookup("EstoqueService");
+            System.out.println("Conectado ao servidor");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao conectar com o servidor: " + e.getMessage(),
+                    "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-    });
-}
-    
+    }
 
     private void carregarCategorias() {
-        ProdutoDAO dao = new ProdutoDAO();
-        List<String> categorias = dao.buscarCategorias();
-        JCBFiltro.removeAllItems();
-        JCBFiltro.addItem("Todas");
-        for (String cat : categorias) {
-            JCBFiltro.addItem(cat);
-        }
-    }
-    
-    private void buscarProdutos() {
-        String categoria = (String) JCBFiltro.getSelectedItem();
-        ProdutoDAO dao = new ProdutoDAO();
         try {
-            List<Produto> lista;
-            if ("Todas".equals(categoria)) {
-                lista = dao.getMinhaListaProdutos(); 
-            } else {
-                lista = dao.buscarPorCategoria(categoria); 
-            }
+            JCBFiltro.removeAllItems();
+            JCBFiltro.addItem("Todas");
 
-            DefaultTableModel modelo = (DefaultTableModel) JTProdutoAbaixo.getModel();
-            modelo.setRowCount(0);
-
-            for (Produto p : lista) {
-                if (p.getQuantidade() < p.getMin() || p.getQuantidade() > p.getMax()) {
-                    modelo.addRow(new Object[]{
-                        p.getId(), p.getNome(), p.getQuantidade(), p.getMin(), p.getMax()
-                    });
-                }
+            List<Categoria> categorias = service.listarCategorias();
+            for (Categoria cat : categorias) {
+                JCBFiltro.addItem(cat.getNomeCategoria());
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao buscar produtos: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Erro ao carregar categorias: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-   
-   
+
+    private void buscarProdutos() {
+    try {
+        String categoriaSelecionada = (String) JCBFiltro.getSelectedItem();
+        List<Produto> lista = service.listarProdutos();
+
+        DefaultTableModel modelo = (DefaultTableModel) JTProdutoAbaixo.getModel();
+        modelo.setRowCount(0);
+
+        for (Produto p : lista) {
+            String nomeCategoria = (p.getCategoria() != null && !p.getCategoria().isEmpty())
+                    ? p.getCategoria()
+                    : "Sem categoria";
+
+            boolean dentroCategoria = "Todas".equals(categoriaSelecionada)
+                    || nomeCategoria.equalsIgnoreCase(categoriaSelecionada);
+
+            if (dentroCategoria && (p.getQuantidade() < p.getMin() || p.getQuantidade() > p.getMax())) {
+                modelo.addRow(new Object[]{
+                    p.getId(),
+                    p.getNome(),
+                    p.getQuantidade(),
+                    p.getMin(),
+                    p.getMax()
+                });
+            }
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Erro ao buscar produtos: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -209,7 +195,7 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBBuscarActionPerformed
-       buscarProdutos();
+        buscarProdutos();
     }//GEN-LAST:event_JBBuscarActionPerformed
 
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
@@ -217,9 +203,8 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
         janelaAnterior.setVisible(true);
     }//GEN-LAST:event_JBFecharActionPerformed
 
-  
     public static void main(String args[]) {
-      
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new FrmProdutoAbaixoDoMin(null).setVisible(true);
