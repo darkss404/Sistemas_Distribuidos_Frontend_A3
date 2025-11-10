@@ -1,6 +1,6 @@
-
 package visao;
 
+import javax.swing.JDialog;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
@@ -8,14 +8,13 @@ import javax.swing.JOptionPane;
 import modelo.Produto;
 import service.EstoqueService;
 
-
-public class FrmReajustarPreco extends javax.swing.JFrame {
+public class FrmReajustarPreco extends javax.swing.JDialog {
 
     private EstoqueService service;
     private Produto produto;
-    private FrmListadeProduto telaAnterior;
 
     public FrmReajustarPreco() {
+        super((java.awt.Frame) null, true);
         initComponents();
         setLocationRelativeTo(null);
         conectarComServidor();
@@ -23,11 +22,6 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
         JTFPrecoAtual.setEditable(false);
 
         JCBProduto.addActionListener(evt -> atualizarPrecoAtual());
-    }
-    
-    public FrmReajustarPreco(FrmListadeProduto telaAnterior) {
-        this();
-        this.telaAnterior = telaAnterior;
     }
     
     private void conectarComServidor() {
@@ -44,6 +38,7 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
     }
 
     public FrmReajustarPreco(Produto produto) {
+        super((java.awt.Frame) null, true);
         initComponents();
         setLocationRelativeTo(null);
         this.produto = produto;
@@ -77,6 +72,7 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Erro ao atualizar preço atual: " + e.getMessage());
         }
     }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -96,6 +92,7 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Reajuste de Preço");
+        setModal(true);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Reajuste de Preço");
@@ -203,15 +200,10 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
             double novoPreco = precoAtual + (precoAtual * percentual / 100);
 
             produto.setPreco(novoPreco);
-            service.salvarProduto(produto); // atualiza pelo RMI
+            service.salvarProduto(produto);
 
             JOptionPane.showMessageDialog(null, "Preço aumentado com sucesso!");
             dispose();
-
-            if (telaAnterior != null) {
-                telaAnterior.setVisible(true);
-                telaAnterior.carregarTabelaProdutos();
-            }
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Digite um percentual válido.");
@@ -238,11 +230,6 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Preço reduzido com sucesso!");
             dispose();
 
-            if (telaAnterior != null) {
-                telaAnterior.setVisible(true);
-                telaAnterior.carregarTabelaProdutos();
-            }
-
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Digite um percentual válido.");
         } catch (Exception e) {
@@ -252,12 +239,7 @@ public class FrmReajustarPreco extends javax.swing.JFrame {
     }//GEN-LAST:event_JBReduzirActionPerformed
 
     private void JBVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBVoltarActionPerformed
-        this.dispose();
-
-    if (telaAnterior != null) {
-        telaAnterior.setVisible(true);
-        telaAnterior.carregarTabelaProdutos(); 
-    }
+        dispose();
     }//GEN-LAST:event_JBVoltarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

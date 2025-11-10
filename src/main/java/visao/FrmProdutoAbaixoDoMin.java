@@ -1,28 +1,46 @@
 package visao;
 
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import modelo.Produto;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import service.EstoqueService;
 import modelo.Categoria;
+import javax.swing.JPanel;
 
 public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
 
-    private javax.swing.JFrame janelaAnterior;
+    private FrmTelaPrincipal principal;
     private EstoqueService service;
 
-    public FrmProdutoAbaixoDoMin(javax.swing.JFrame janelaAnterior) {
-        this.janelaAnterior = janelaAnterior;
+    public FrmProdutoAbaixoDoMin(FrmTelaPrincipal principal) {
+        this.principal = principal;
         initComponents();
         conectarComServidor();
         carregarCategorias();
         buscarProdutos();
+    }
+
+    public JPanel getContentPanel() {
+        JPanel wrapper = new JPanel(new java.awt.BorderLayout());
+
+        // Se o contentPane já for um JPanel, retorna ele
+        if (getContentPane() instanceof JPanel) {
+            return (JPanel) getContentPane();
+        }
+
+        // Se não, cria um wrapper com todos os componentes
+        java.awt.Component[] components = getContentPane().getComponents();
+        for (java.awt.Component comp : components) {
+            wrapper.add(comp);
+        }
+
+        // Limpa o contentPane original
+        getContentPane().removeAll();
+
+        return wrapper;
     }
 
     private void conectarComServidor() {
@@ -199,18 +217,8 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
     }//GEN-LAST:event_JBBuscarActionPerformed
 
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
-        this.dispose();
-        janelaAnterior.setVisible(true);
+        principal.showPanel("Relatorios");
     }//GEN-LAST:event_JBFecharActionPerformed
-
-    public static void main(String args[]) {
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmProdutoAbaixoDoMin(null).setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JBBuscar;

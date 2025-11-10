@@ -6,6 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import service.EstoqueService;
+import javax.swing.JPanel;
 
 /**
  *
@@ -13,9 +14,32 @@ import service.EstoqueService;
  */
 public class FrmBalancoFisico extends javax.swing.JFrame {
 
-    public FrmBalancoFisico() {
+    private FrmTelaPrincipal principal;
+
+    public FrmBalancoFisico(FrmTelaPrincipal principal) {
+        this.principal = principal;
         initComponents();
         carregarTabelaBalanco();
+    }
+
+    public JPanel getContentPanel() {
+        JPanel wrapper = new JPanel(new java.awt.BorderLayout());
+
+        // Se o contentPane já for um JPanel, retorna ele
+        if (getContentPane() instanceof JPanel) {
+            return (JPanel) getContentPane();
+        }
+
+        // Se não, cria um wrapper com todos os componentes
+        java.awt.Component[] components = getContentPane().getComponents();
+        for (java.awt.Component comp : components) {
+            wrapper.add(comp);
+        }
+
+        // Limpa o contentPane original
+        getContentPane().removeAll();
+
+        return wrapper;
     }
 
     private void carregarTabelaBalanco() {
@@ -169,9 +193,7 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
-        FrmRelatorio relatorio = new FrmRelatorio();
-        relatorio.setVisible(true);
-        this.dispose();
+        principal.showPanel("Relatorios");
     }//GEN-LAST:event_JBFecharActionPerformed
 
     private void JTFBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTFBuscarActionPerformed
@@ -212,41 +234,6 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
         JLTotal.setText("Total do estoque: R$ " + String.format("%.2f", totalEstoque));
     }//GEN-LAST:event_JBFiltrarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmBalancoFisico.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmBalancoFisico.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmBalancoFisico.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmBalancoFisico.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmBalancoFisico().setVisible(true);
-            }
-        });
-    }
-
     public class BalancoFisico {
 
         public int id;
@@ -260,10 +247,6 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
         public double custoUnitario;
         public double custoFinal;
     }
-//    public List<BalancoFisico>gerarBalanco(){
-//        
-//    
-//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JBFechar;

@@ -2,26 +2,41 @@ package visao;
 
 import modelo.Categoria;
 import java.util.List;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import service.EstoqueService;
+import javax.swing.JPanel;
 
 public class FrmListadeCategoria extends javax.swing.JFrame {
 
-    private JFrame janelaAnterior;
+    private FrmTelaPrincipal principal;
 
-    public FrmListadeCategoria(JFrame janelaAnterior) {
-        this.janelaAnterior = janelaAnterior;
+    public FrmListadeCategoria(FrmTelaPrincipal principal) {
+        this.principal = principal;
         initComponents();
         carregarTabela();
     }
 
-    public FrmListadeCategoria() {
-        initComponents();
-        carregarTabela();
+    public JPanel getContentPanel() {
+        JPanel wrapper = new JPanel(new java.awt.BorderLayout());
+
+        // Se o contentPane já for um JPanel, retorna ele
+        if (getContentPane() instanceof JPanel) {
+            return (JPanel) getContentPane();
+        }
+
+        // Se não, cria um wrapper com todos os componentes
+        java.awt.Component[] components = getContentPane().getComponents();
+        for (java.awt.Component comp : components) {
+            wrapper.add(comp);
+        }
+
+        // Limpa o contentPane original
+        getContentPane().removeAll();
+
+        return wrapper;
     }
 
     public void carregarTabela() {
@@ -161,16 +176,13 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBVoltarLCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBVoltarLCActionPerformed
-        if (janelaAnterior != null) {
-            janelaAnterior.setVisible(true);
-        }
-        dispose();
+        principal.showPanel("Menu");
     }//GEN-LAST:event_JBVoltarLCActionPerformed
 
     private void JBAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBAdicionarActionPerformed
-        FrmCadastroDeCategoria cadastro = new FrmCadastroDeCategoria(this);
-        cadastro.setVisible(true);
-        this.setVisible(false);
+        FrmCadastroDeCategoria dialog = new FrmCadastroDeCategoria(null, true);
+        dialog.setVisible(true);
+        carregarTabela();
     }//GEN-LAST:event_JBAdicionarActionPerformed
 
     private void JBEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBEditarActionPerformed
@@ -188,8 +200,9 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
 
         Categoria categoria = new Categoria(id, nome, tamanho, embalagem);
 
-        FrmCadastroDeCategoria telaEdicao = new FrmCadastroDeCategoria(this, categoria);
-        telaEdicao.setVisible(true);
+        FrmCadastroDeCategoria dialog = new FrmCadastroDeCategoria(null, true, categoria);
+        dialog.setVisible(true);
+        carregarTabela();
     }//GEN-LAST:event_JBEditarActionPerformed
 
     private void JBExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBExcluirActionPerformed
@@ -205,7 +218,7 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
             return;
         }
 
-        int idCategoria = (int) JTListaCategoria.getValueAt(linhaSelecionada, 0); // ID na coluna 0
+        int idCategoria = (int) JTListaCategoria.getValueAt(linhaSelecionada, 0);
 
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
@@ -221,15 +234,6 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
                 "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_JBExcluirActionPerformed
-
-    public static void main(String args[]) {
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmListadeCategoria().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JBAdicionar;

@@ -7,16 +7,39 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 import modelo.Categoria;
 import modelo.Produto;
 
 public class FrmListadeProduto extends javax.swing.JFrame {
 
-    public FrmListadeProduto() {
+    private FrmTelaPrincipal principal;
+
+    public FrmListadeProduto(FrmTelaPrincipal principal) {
+        this.principal = principal;
         initComponents();
         carregarTabelaProdutos();
         carregarCategoriasNoFiltro();
+    }
+
+    public JPanel getContentPanel() {
+        JPanel wrapper = new JPanel(new java.awt.BorderLayout());
+
+        // Se o contentPane já for um JPanel, retorna ele
+        if (getContentPane() instanceof JPanel) {
+            return (JPanel) getContentPane();
+        }
+
+        // Se não, cria um wrapper com todos os componentes
+        java.awt.Component[] components = getContentPane().getComponents();
+        for (java.awt.Component comp : components) {
+            wrapper.add(comp);
+        }
+
+        // Limpa o contentPane original
+        getContentPane().removeAll();
+
+        return wrapper;
     }
 
     private void carregarCategoriasNoFiltro() {
@@ -34,14 +57,6 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar categorias: " + e.getMessage());
         }
-    }
-
-    private JFrame janelaAnterior;
-
-    public FrmListadeProduto(JFrame janelaAnterior) {
-        this.janelaAnterior = janelaAnterior;
-        initComponents();
-        carregarCategoriasNoFiltro();
     }
 
     @SuppressWarnings("unchecked")
@@ -232,14 +247,11 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         String categoriaSelecionada = JCBCategoria.getSelectedItem().toString();
 
         try {
-            // Conecta ao RMI
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
 
-            // Busca todos os produtos via RMI
             List<Produto> produtos = service.listarProdutos();
 
-            // Filtra localmente
             List<Produto> produtosFiltrados = new ArrayList<>();
             for (Produto p : produtos) {
                 boolean nomeConfere = nomeBuscado.isEmpty() || p.getNome().toLowerCase().contains(nomeBuscado);
@@ -249,7 +261,6 @@ public class FrmListadeProduto extends javax.swing.JFrame {
                 }
             }
 
-            // Atualiza tabela
             DefaultTableModel modelo = (DefaultTableModel) JTTabelaProdutos.getModel();
             modelo.setRowCount(0);
 
@@ -270,14 +281,13 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     }//GEN-LAST:event_JBFiltrarActionPerformed
 
     private void JBNovoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBNovoProdutoActionPerformed
-        FrmCadastrodeProduto cadastro = new FrmCadastrodeProduto(this);
-        cadastro.setVisible(true);
-        this.setVisible(false);
+        FrmCadastrodeProduto dialog = new FrmCadastrodeProduto(null, true);
+        dialog.setVisible(true);
+        carregarTabelaProdutos();
     }//GEN-LAST:event_JBNovoProdutoActionPerformed
 
     private void JBVoltarLPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBVoltarLPActionPerformed
-        janelaAnterior.setVisible(true);
-        dispose();
+        principal.showPanel("Menu");
     }//GEN-LAST:event_JBVoltarLPActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -301,9 +311,9 @@ public class FrmListadeProduto extends javax.swing.JFrame {
             Produto produto = service.buscarProdutoPorId(idProduto);
 
             if (produto != null) {
-                FrmCadastrodeProduto editarProduto = new FrmCadastrodeProduto(this, produto);
-                editarProduto.setVisible(true);
-                this.setVisible(false);
+                FrmCadastrodeProduto dialog = new FrmCadastrodeProduto(null, true, produto);
+                dialog.setVisible(true);
+                carregarTabelaProdutos();
             } else {
                 JOptionPane.showMessageDialog(this, "Produto não encontrado.");
             }
@@ -342,12 +352,11 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         Registry registry = LocateRegistry.getRegistry("localhost", 1099);
         EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
 
-        // Chama o método RMI que retorna boolean
         boolean sucesso = service.DeletarProdutoID(idProduto);
 
         if (sucesso) {
             JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!");
-            carregarTabelaProdutos(); // ou carregarTabela(), conforme o seu método
+            carregarTabelaProdutos();
         } else {
             JOptionPane.showMessageDialog(this, "Erro ao excluir o produto.");
         }
@@ -359,25 +368,21 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     }//GEN-LAST:event_JBExcluirActionPerformed
 
     private void JBReajustarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBReajustarActionPerformed
-        FrmReajustarPreco reajuste = new FrmReajustarPreco(this);
-        reajuste.setVisible(true);
-        this.setVisible(false);
+        FrmReajustarPreco dialog = new FrmReajustarPreco();
+        dialog.setVisible(true);
+        carregarTabelaProdutos();
     }//GEN-LAST:event_JBReajustarActionPerformed
 
    public void carregarTabelaProdutos() {
     try {
-        // Conecta ao servidor RMI
         Registry registry = LocateRegistry.getRegistry("localhost", 1099);
         EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
 
-        // Busca lista de produtos via RMI
         List<Produto> lista = service.listarProdutos();
 
-        // Prepara a tabela
         DefaultTableModel modelo = (DefaultTableModel) JTTabelaProdutos.getModel();
         modelo.setRowCount(0);
 
-        // Preenche os dados
         for (Produto p : lista) {
             System.out.println("Categoria do produto carregado: " + p.getCategoria());
             modelo.addRow(new Object[]{
@@ -393,41 +398,6 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
         e.printStackTrace();
     }
-    }
-
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmListadeProduto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmListadeProduto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmListadeProduto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmListadeProduto.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmListadeProduto().setVisible(true);
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

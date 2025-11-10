@@ -1,33 +1,30 @@
 package visao;
 
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import modelo.Categoria;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import service.EstoqueService;
 
-public class FrmCadastroDeCategoria extends javax.swing.JFrame {
+public class FrmCadastroDeCategoria extends javax.swing.JDialog {
 
-    private JFrame janelaAnterior;
     private int idCategoria = 0;
 
-    public FrmCadastroDeCategoria() {
+    public FrmCadastroDeCategoria(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
+        setLocationRelativeTo(parent);
     }
 
-    public FrmCadastroDeCategoria(JFrame janelaAnterior) {
-        this.janelaAnterior = janelaAnterior;
-        initComponents();
-    }
-
-    public FrmCadastroDeCategoria(JFrame janelaAnterior, Categoria categoria) {
-        this.janelaAnterior = janelaAnterior;
+    public FrmCadastroDeCategoria(java.awt.Frame parent, boolean modal, Categoria categoria) {
+        super(parent, modal);
         initComponents();
         JTFNomeCategoria.setText(categoria.getNomeCategoria());
         JCBTamanho.setSelectedItem(categoria.getTamanho());
         JCBEmbalagem.setSelectedItem(categoria.getEmbalagem());
         this.idCategoria = categoria.getId();
+        setLocationRelativeTo(parent);
     }
 
     @SuppressWarnings("unchecked")
@@ -47,7 +44,8 @@ public class FrmCadastroDeCategoria extends javax.swing.JFrame {
         JBLimpar = new javax.swing.JButton();
         JBCancelar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setModal(true);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Cadastro de Categoria");
@@ -193,12 +191,7 @@ public class FrmCadastroDeCategoria extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Categoria atualizada com sucesso!");
             }
 
-            if (janelaAnterior instanceof FrmListadeCategoria) {
-                ((FrmListadeCategoria) janelaAnterior).carregarTabela();
-                janelaAnterior.setVisible(true);
-            }
-
-            this.dispose();
+            dispose();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar via RMI: " + e.getMessage());
@@ -215,20 +208,8 @@ public class FrmCadastroDeCategoria extends javax.swing.JFrame {
     }//GEN-LAST:event_JBLimparActionPerformed
 
     private void JBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBCancelarActionPerformed
-        if (janelaAnterior != null) {
-            janelaAnterior.setVisible(true);
-        }
-        this.dispose();
+        dispose();
     }//GEN-LAST:event_JBCancelarActionPerformed
-
-    public static void main(String args[]) {
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmCadastroDeCategoria().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JBCancelar;

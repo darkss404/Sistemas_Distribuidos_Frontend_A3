@@ -1,30 +1,30 @@
 package visao;
 
 import java.util.List;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import modelo.Categoria;
 import modelo.Produto;
-import javax.swing.JFrame;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import service.EstoqueService;
 
-public class FrmCadastrodeProduto extends javax.swing.JFrame {
+public class FrmCadastrodeProduto extends javax.swing.JDialog {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmCadastrodeProduto.class.getName());
+    private Produto produtoEmEdicao;
 
-    private FrmListadeProduto telaLista;
-
-    public FrmCadastrodeProduto(JFrame telaAnterior) {
+    public FrmCadastrodeProduto(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
-        this.telaAnterior = telaAnterior;
         JCBCategoria.setEditable(false);
         carregarCategoriasDoBanco();
+        setLocationRelativeTo(parent);
     }
 
-    public FrmCadastrodeProduto(JFrame telaAnterior, Produto produto) {
+    public FrmCadastrodeProduto(java.awt.Frame parent, boolean modal, Produto produto) {
+        super(parent, modal);
         initComponents();
-        this.telaAnterior = telaAnterior;
         this.produtoEmEdicao = produto;
         JCBCategoria.setEditable(false);
         carregarCategoriasDoBanco();
@@ -37,11 +37,8 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
         JTFMax.setText(String.valueOf(produto.getMax()));
         JCBCategoria.setSelectedItem(produto.getCategoria());
         JBSalvar.setText("Atualizar");
+        setLocationRelativeTo(parent);
     }
-
-    private Produto produtoEmEdicao;
-
-    private javax.swing.JFrame telaAnterior;
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -64,7 +61,9 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
         JBCancelar = new javax.swing.JButton();
         JCBCategoria = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setModal(true);
+        setTitle("Cadastro de Produto");
 
         Nome.setText("Nome");
 
@@ -236,15 +235,7 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,
                     produtoEmEdicao == null ? "Produto cadastrado com sucesso!" : "Produto atualizado com sucesso!");
 
-            if (telaAnterior instanceof FrmListadeProduto telaProd) {
-                telaProd.carregarTabelaProdutos();
-                telaProd.setVisible(true);
-            } else if (telaAnterior instanceof FrmListaDePreco telaPreco) {
-                telaPreco.carregarTabela();
-                telaPreco.setVisible(true);
-            }
-
-            this.dispose();
+            dispose();
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
@@ -261,7 +252,7 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
     }//GEN-LAST:event_JBSalvarActionPerformed
 
     private void JBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBCancelarActionPerformed
-        this.dispose();
+        dispose();
     }//GEN-LAST:event_JBCancelarActionPerformed
 
     private void JCBCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBCategoriaActionPerformed
@@ -271,31 +262,6 @@ public class FrmCadastrodeProduto extends javax.swing.JFrame {
     private void JTFNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTFNomeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_JTFNomeActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new FrmCadastrodeProduto((javax.swing.JFrame) null, null).setVisible(true));
-    }
 
     private void carregarCategoriasDoBanco() {
         try {

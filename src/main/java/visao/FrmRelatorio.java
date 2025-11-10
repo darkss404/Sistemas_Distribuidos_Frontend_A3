@@ -1,11 +1,34 @@
-
 package visao;
 
+import javax.swing.JPanel;
 
 public class FrmRelatorio extends javax.swing.JFrame {
 
-    public FrmRelatorio() {
+    private FrmTelaPrincipal principal;
+
+    public FrmRelatorio(FrmTelaPrincipal principal) {
+        this.principal = principal;
         initComponents();
+    }
+
+    public JPanel getContentPanel() {
+        JPanel wrapper = new JPanel(new java.awt.BorderLayout());
+
+        // Se o contentPane já for um JPanel, retorna ele
+        if (getContentPane() instanceof JPanel) {
+            return (JPanel) getContentPane();
+        }
+
+        // Se não, cria um wrapper com todos os componentes
+        java.awt.Component[] components = getContentPane().getComponents();
+        for (java.awt.Component comp : components) {
+            wrapper.add(comp);
+        }
+
+        // Limpa o contentPane original
+        getContentPane().removeAll();
+
+        return wrapper;
     }
 
     @SuppressWarnings("unchecked")
@@ -118,65 +141,24 @@ public class FrmRelatorio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
-    dispose();
+        principal.showPanel("Menu");
     }//GEN-LAST:event_JBFecharActionPerformed
 
     private void JBListadePrecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBListadePrecoActionPerformed
-        FrmListaDePreco objeto = new FrmListaDePreco();
-        objeto.setVisible(true);
+        principal.showPanel("ListaPreco");
     }//GEN-LAST:event_JBListadePrecoActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        FrmBalancoFisico objeto = new FrmBalancoFisico();
-        objeto.setVisible(true);
+        principal.showPanel("Balanco");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void JBProdutosAbaixoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBProdutosAbaixoActionPerformed
-        new FrmProdutoAbaixoDoMin(this).setVisible(true);
-        this.setVisible(false);
+        principal.showPanel("ProdutoAbaixo");
     }//GEN-LAST:event_JBProdutosAbaixoActionPerformed
 
     private void JBQuantidadeProdutoCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBQuantidadeProdutoCategoriaActionPerformed
-        new FrmQuantidadeDeProduto(this).setVisible(true);
-        this.setVisible(false);
+        principal.showPanel("QuantidadeProduto");
     }//GEN-LAST:event_JBQuantidadeProdutoCategoriaActionPerformed
-
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmRelatorio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmRelatorio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmRelatorio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmRelatorio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmRelatorio().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton JBFechar;
