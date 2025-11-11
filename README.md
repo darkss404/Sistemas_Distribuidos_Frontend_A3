@@ -1,24 +1,20 @@
-# Controle de Estoque A3
+# Sistema de Estoque baseado em Java RMI
 
-Projeto desenvolvido para a disciplina **sistemas distribuidos** da **UNISUL**, com o objetivo de aplicar conceitos de programação distribuída utilizando RMI no **GitHub**.
+## Universidade do Sul de Santa Catarina – UNISUL
+Projeto desenvolvido para a disciplina **Sistemas Distribuídos** da **UNISUL**, com foco na implementação de um sistema de controle de estoque distribuído utilizando Java RMI para comunicação entre cliente e servidor.
 
-link do back:https://github.com/darkss404/Sistemas_Distribuidos_Backend_A3
+## Descrição do Sistema
+Este projeto corresponde ao **front-end** do **Sistema de Controle de Estoque Distribuído**, implementado em **Java** e utilizando **RMI (Remote Method Invocation)** para estabelecer a comunicação com o **servidor**.  
+A aplicação é responsável por **acessar os serviços remotos do back-end**, permitindo que o **usuário** realize **operações de gerenciamento do estoque** por meio de uma **interface dedicada**.
 
-## 📦 Descrição
+## Arquitetura do Sistema
+O sistema adota uma **arquitetura em duas camadas**, separando responsabilidades entre **servidor** e **cliente**:  
+**Servidor (Back-end)**: responsável por **gerenciar os dados**, **processamento** e **disponibilizar os serviços remotos** via **Java RMI**.  
+**Cliente (Front-end)**: conecta-se ao **servidor** utilizando **RMI**, **consome os serviços disponíveis** e **exibe as informações** para o **usuário**.  
 
-O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comercial, oferecendo funcionalidades para:
+**Repositório do Back-end**: https://github.com/darkss404/Sistemas_Distribuidos_Backend_A3
 
-- **Cadastro de Produtos** (CRUD)
-- **Cadastro de Categorias** (CRUD)
-- **Controle de Entradas e Saídas** de produtos
-- **Relatórios Gerenciais** como:
-    - Lista de Preços
-    - Balanço Físico/Financeiro
-    - Produtos abaixo da quantidade mínima
-    - Produtos acima da quantidade máxima
-    - Quantidade de produtos por categoria
-
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 | Tecnologia      | Versão            | Observações                                 |
 |-----------------|-------------------|---------------------------------------------|
@@ -26,28 +22,27 @@ O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comer
 | Apache NetBeans | 25.0              | IDE utilizada para o desenvolvimento        |
 | Git             | 2.40+             | Controle de versão e colaboração            |
 | GitHub          | -                 | Hospedagem do repositório e controle remoto |
-| Oracle Academy  | -                 | Cursos complementares para o projeto        |
 | Swing (Java)    | Integrado ao Java | Interface gráfica do sistema (GUI)          |
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
-- `src/main/java/modelo` – Contém as classes de entidade como Produto, Categoria e Movimentacao.
-- `src/main/java/visao` – Responsável pelas telas e interface gráfica (Swing).
-- `src/main/java/principal` – Classe principal para inicialização do sistema.
-- `src/main/java/service`- Classe que faz a integração do back end com o front end, consultas.
+- `src/main/java/modelo` – **Contém as classes de entidade** como Produto, Categoria e Movimentacao.
+- `src/main/java/visao` – **Responsável pelas telas e interface gráfica (Swing)**.
+- `src/main/java/principal` – **Classe principal para inicialização do sistema**.
+- `src/main/java/service` – **Classe que faz a integração do back-end com o front-end**, realizando consultas e comunicação entre as camadas.
 
-## ✅ Requisitos Funcionais
+## Requisitos Funcionais e Não Funcionais
 
 ### RF001 - Gerenciamento de Produtos
-- **RF001.1:** Permitir o cadastro de produtos com nome, preço unitário, unidade, quantidade mínima/máxima e categoria.
-- **RF001.2:** Permitir o reajuste de preço de todos os produtos por percentual.
+- **RF001.1:** Permitir o **cadastro de produtos** com **nome**, **preço unitário**, **unidade**, **quantidade mínima/máxima** e **categoria**.
+- **RF001.2:** Permitir o **reajuste de preço** de todos os produtos por **percentual**.
 
 ### RF002 - Gerenciamento de Categorias
-- **RF002.1:** Permitir o cadastro de categorias com os seguintes atributos: nome, tamanho e tipo de embalagem.
+- **RF002.1:** Permitir o **cadastro de categorias** com os seguintes atributos: **nome**, **tamanho** e **tipo de embalagem**.
 
 ### RF003 - Movimentação de Estoque
-- **RF003.1:** Permitir a entrada de produtos no estoque.
-- **RF003.2:** Permitir a saída de produtos do estoque.
+- **RF003.1:** Permitir a **entrada de produtos** no estoque.
+- **RF003.2:** Permitir a **saída de produtos** do estoque.
 - **RF003.3:** Alertar o usuário quando a quantidade de um produto estiver **abaixo da mínima** após uma movimentação.
 - **RF003.4:** Alertar o usuário quando a quantidade de um produto estiver **acima da máxima** após uma movimentação.
 
@@ -61,10 +56,17 @@ O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comer
 ### RF005 - Interface do Sistema
 - **RF005.1:** Disponibilizar uma **interface gráfica** para interação com todas as funcionalidades do sistema.
 
-## ❌ Requisitos Não Funcionais
+### **RF006 - Comunicação via RMI**
+- **RF006.1:** O sistema deve utilizar **Java RMI (Remote Method Invocation)** para permitir a comunicação entre o **cliente** e o **servidor**.
+- **RF006.2:** O **servidor** deve disponibilizar **métodos remotos** para **cadastro**, **listagem** e **movimentação** de produtos e categorias.
+- **RF006.3:** O **cliente** deve **consumir esses serviços remotamente**, garantindo a interação com o estoque de forma **distribuída**.
 
-### RNF001 - Arquitetura e Persistência
-- **RNF001.1:** Utilizar java para fazer a integração do back end com front end através do RMI.
+## Requisitos Não Funcionais
+
+### RNF001 - Arquitetura e Comunicação via RMI
+- **RNF001.1:** Utilizar **Java RMI (Remote Method Invocation)** para permitir a **comunicação remota** entre o **cliente** e o **servidor**.
+- **RNF001.2:** Garantir que a **conexão remota** seja estável e mantenha a **integridade dos dados** durante as operações distribuídas.
+- **RNF001.3:** Estruturar o sistema em **camadas separadas** (front-end e back-end), com comunicação exclusivamente via **serviços RMI**.
 
 ### RNF002 - Qualidade e Organização do Código
 - **RNF002.1:** Seguir **boas práticas de codificação**, como nomes significativos, coesão e reutilização de código.
@@ -78,9 +80,9 @@ O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comer
 
 ### RNF004 - Usabilidade e Simplicidade
 - **RNF004.1:** O sistema deve ser **simples, funcional e de fácil uso** para qualquer usuário.
-- **RNF004.2:** A interface gráfica deve ser **clara, intuitiva** e adequada ao fluxo de trabalho.
+- **RNF004.2:** A **interface gráfica** deve ser **clara, intuitiva** e adequada ao **fluxo de trabalho**.
 
-## 👥 Equipe
+## Equipe
 
 | Nome do Aluno                    | Usuário Github  | RA do Aluno |
 |----------------------------------|-----------------|-------------|
@@ -89,8 +91,12 @@ O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comer
 | Hector Dartagnan Viana de Brum   | @Eudarta        | 10725116554 |
 | Gabriel González Mattos          | @gabinhogmtts   | 1072517870  |
 
-## 📌 Requisitos para Rodar o Projeto
+## Requisitos para Rodar o Projeto
 
-- Java 11 ou superior
-- IDE Java (Apache NetBeans)
-- Clonar o repositório e configurar o banco de dados a partir do script disponível
+- **Java 11** ou superior instalado e configurado no sistema
+- **IDE Java** (recomendado: **Apache NetBeans** ou **IntelliJ IDEA**)
+- **Clonar** este repositório e o do **back-end** (link disponível na seção anterior)
+- **Executar primeiro o servidor RMI**, disponível no projeto do back-end
+- **Verificar** se a porta utilizada pelo **Registry RMI** está livre
+- **Em seguida**, executar o **cliente (front-end)** para consumir os serviços remotos
+- **Banco de dados** deve estar configurado e em execução, conforme o script SQL fornecido no back-end  
