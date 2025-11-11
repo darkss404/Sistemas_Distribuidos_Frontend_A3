@@ -23,8 +23,6 @@ O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comer
 | Tecnologia      | Versão            | Observações                                 |
 |-----------------|-------------------|---------------------------------------------|
 | Java            | 23                | Linguagem principal para o sistema          |
-| MySQL           | 9.3.0             | Banco de dados para persistência de dados   |
-| JDBC Driver     | 4.2               | Conexão Java <-> MySQL                      |
 | Apache NetBeans | 25.0              | IDE utilizada para o desenvolvimento        |
 | Git             | 2.40+             | Controle de versão e colaboração            |
 | GitHub          | -                 | Hospedagem do repositório e controle remoto |
@@ -35,9 +33,8 @@ O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comer
 
 - `src/main/java/modelo` – Contém as classes de entidade como Produto, Categoria e Movimentacao.
 - `src/main/java/visao` – Responsável pelas telas e interface gráfica (Swing).
-- `src/main/java/dao` – Implementa a persistência e consultas ao banco de dados.
 - `src/main/java/principal` – Classe principal para inicialização do sistema.
-- `db/estoque.sql` – Script SQL para criação do banco de dados.
+- `src/main/java/service`- Classe que faz a integração do back end com o front end, consultas.
 
 ## ✅ Requisitos Funcionais
 
@@ -67,8 +64,7 @@ O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comer
 ## ❌ Requisitos Não Funcionais
 
 ### RNF001 - Arquitetura e Persistência
-- **RNF001.1:** Utilizar o padrão de projeto **DAO (Data Access Object)** para separar a lógica de acesso aos dados da lógica de negócios.
-- **RNF001.2:** Utilizar um banco de dados **MySQL** para garantir a persistência dos dados.
+- **RNF001.1:** Utilizar java para fazer a integração do back end com front end através do RMI.
 
 ### RNF002 - Qualidade e Organização do Código
 - **RNF002.1:** Seguir **boas práticas de codificação**, como nomes significativos, coesão e reutilização de código.
@@ -96,13 +92,5 @@ O sistema de Controle de Estoque permite gerenciar produtos de uma empresa comer
 ## 📌 Requisitos para Rodar o Projeto
 
 - Java 11 ou superior
-- MySQL
 - IDE Java (Apache NetBeans)
 - Clonar o repositório e configurar o banco de dados a partir do script disponível
-- Login Banco De Dados MySQL:
-  - Usuário: root
-  - Senha: TrabalhoA3
-
-
-## 🎥 Apresentação
-
