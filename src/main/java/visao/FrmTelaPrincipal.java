@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
 public class FrmTelaPrincipal extends javax.swing.JFrame {
+
     private CardLayout cardLayout;
     private JPanel cardPanel;
 
@@ -19,18 +20,15 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        // Adiciona todos os painéis
+        // Tela do menu
         cardPanel.add(createMenuPanel(), "Menu");
 
-        // Cria as instâncias das telas e adiciona seus painéis
+        // Telas que possuem getContentPanel()
         FrmListadeProduto produtos = new FrmListadeProduto(this);
         cardPanel.add(produtos.getContentPanel(), "Produtos");
 
         FrmListadeCategoria categorias = new FrmListadeCategoria(this);
         cardPanel.add(categorias.getContentPanel(), "Categorias");
-
-        FrmMovimentacaoDeEstoque movimentacao = new FrmMovimentacaoDeEstoque(this);
-        cardPanel.add(movimentacao.getContentPanel(), "Movimentacao");
 
         FrmRelatorio relatorios = new FrmRelatorio(this);
         cardPanel.add(relatorios.getContentPanel(), "Relatorios");
@@ -47,6 +45,11 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         FrmQuantidadeDeProduto quantidadeProduto = new FrmQuantidadeDeProduto(this);
         cardPanel.add(quantidadeProduto.getContentPanel(), "QuantidadeProduto");
 
+        // Tela Movimentação — SEM getContentPanel()
+        FrmMovimentacaoDeEstoque movimentacao = new FrmMovimentacaoDeEstoque(this);
+        cardPanel.add(movimentacao.getContentPane(), "Movimentacao");
+
+        // finaliza o CardLayout
         getContentPane().setLayout(new java.awt.BorderLayout());
         getContentPane().add(cardPanel, java.awt.BorderLayout.CENTER);
 
@@ -68,9 +71,8 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         gbc.gridwidth = 2;
         panel.add(jLabel1, gbc);
 
-        // Separador 1
+        // Separador
         gbc.gridy = 1;
-        gbc.gridwidth = 2;
         panel.add(jSeparator1, gbc);
 
         // Botões
@@ -94,7 +96,7 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         gbc.gridwidth = 2;
         panel.add(JBSair, gbc);
 
-        // Separador 2
+        // Separador inferior
         gbc.gridy = 5;
         panel.add(jSeparator2, gbc);
 
@@ -110,7 +112,6 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
@@ -126,160 +127,102 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Menu Principal");
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18));
         jLabel1.setText("Controle de Estoque");
 
         JBProdutos.setText("Produtos");
-        JBProdutos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JBProdutosActionPerformed(evt);
-            }
-        });
+        JBProdutos.addActionListener(evt -> JBProdutosActionPerformed(evt));
 
         JBCategorias.setText("Categorias");
-        JBCategorias.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JBCategoriasActionPerformed(evt);
-            }
-        });
+        JBCategorias.addActionListener(evt -> JBCategoriasActionPerformed(evt));
 
         JBMovimentação.setText("Movimentação de Estoque");
-        JBMovimentação.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JBMovimentaçãoActionPerformed(evt);
-            }
-        });
+        JBMovimentação.addActionListener(evt -> JBMovimentaçãoActionPerformed(evt));
 
         JBRelatorios.setText("Relatórios");
-        JBRelatorios.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JBRelatoriosActionPerformed(evt);
-            }
-        });
+        JBRelatorios.addActionListener(evt -> JBRelatoriosActionPerformed(evt));
 
         JBSair.setBackground(new java.awt.Color(220, 53, 69));
         JBSair.setText("Sair");
-        JBSair.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JBSairActionPerformed(evt);
-            }
-        });
+        JBSair.addActionListener(evt -> JBSairActionPerformed(evt));
 
-        jLabel2.setText("Versão 9.9    |    2025  ");
+        jLabel2.setText("Versão 9.9 | 2025");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jSeparator1)
+                        .addComponent(jSeparator2)
                         .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGap(128)
+                                .addComponent(jLabel1))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(160)
+                                .addComponent(jLabel2))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(140)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                                        .addComponent(JBProdutos)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addGap(123, 123, 123)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addGap(51, 51, 51)
-                                                                .addComponent(JBProdutos))
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addGap(45, 45, 45)
-                                                                .addComponent(JBSair, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(JBRelatorios)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                .addComponent(JBCategorias))
-                                                        .addComponent(JBMovimentação, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGap(128, 128, 128)
-                                                .addComponent(jLabel1))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGap(158, 158, 158)
-                                                .addComponent(jLabel2)))
-                                .addContainerGap(130, Short.MAX_VALUE))
+                                                .addComponent(JBRelatorios)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(JBCategorias))
+                                        .addComponent(JBMovimentação)
+                                        .addComponent(JBSair)))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGap(5)
                                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(31, 31, 31)
+                                .addGap(25)
                                 .addComponent(JBProdutos)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(JBRelatorios)
                                         .addComponent(JBCategorias))
-                                .addGap(18, 18, 18)
+                                .addGap(18)
                                 .addComponent(JBMovimentação)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(18)
                                 .addComponent(JBSair)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel2)
-                                .addGap(14, 14, 14))
+                                .addContainerGap())
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void JBProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBProdutosActionPerformed
-        showPanel("Produtos");
-    }//GEN-LAST:event_JBProdutosActionPerformed
-
-    private void JBMovimentaçãoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBMovimentaçãoActionPerformed
-        showPanel("Movimentacao");
-    }//GEN-LAST:event_JBMovimentaçãoActionPerformed
-
-    private void JBCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBCategoriasActionPerformed
-        showPanel("Categorias");
-    }//GEN-LAST:event_JBCategoriasActionPerformed
-
-    private void JBRelatoriosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBRelatoriosActionPerformed
-        showPanel("Relatorios");
-    }//GEN-LAST:event_JBRelatoriosActionPerformed
-
-    private void JBSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBSairActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_JBSairActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmTelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmTelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmTelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmTelaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmTelaPrincipal().setVisible(true);
-            }
-        });
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private void JBProdutosActionPerformed(java.awt.event.ActionEvent evt) {
+        showPanel("Produtos");
+    }
+
+    private void JBCategoriasActionPerformed(java.awt.event.ActionEvent evt) {
+        showPanel("Categorias");
+    }
+
+    private void JBMovimentaçãoActionPerformed(java.awt.event.ActionEvent evt) {
+        showPanel("Movimentacao");
+    }
+
+    private void JBRelatoriosActionPerformed(java.awt.event.ActionEvent evt) {
+        showPanel("Relatorios");
+    }
+
+    private void JBSairActionPerformed(java.awt.event.ActionEvent evt) {
+        System.exit(0);
+    }
+
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(() -> new FrmTelaPrincipal().setVisible(true));
+    }
+
+    // Variables declaration
     private javax.swing.JButton JBCategorias;
     private javax.swing.JButton JBMovimentação;
     private javax.swing.JButton JBProdutos;
@@ -289,5 +232,4 @@ public class FrmTelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    // End of variables declaration//GEN-END:variables
 }

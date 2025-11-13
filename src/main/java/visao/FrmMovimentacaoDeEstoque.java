@@ -10,6 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import service.EstoqueService;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
@@ -23,26 +24,63 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         carregarProdutosNoCombo();
         JTFData.setText(LocalDate.now().toString());
         JTFData.setEditable(false);
+
         javax.swing.ButtonGroup grupoTipoMovimentacao = new javax.swing.ButtonGroup();
         grupoTipoMovimentacao.add(JRBEntrada);
         grupoTipoMovimentacao.add(JRBSaida);
-        atualizarTabelaMovimentacoesImediato(); // Método corrigido
+
+        atualizarTabelaMovimentacoesImediato();
+
+        SwingUtilities.invokeLater(() -> {
+            this.revalidate();
+            this.repaint();
+        });
     }
 
     public JPanel getContentPanel() {
-        JPanel wrapper = new JPanel(new java.awt.BorderLayout());
+        // Cria um novo panel com layout correto
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new java.awt.BorderLayout());
 
-        if (getContentPane() instanceof JPanel) {
-            return (JPanel) getContentPane();
-        }
+        // Adiciona TODOS os componentes manualmente
+        mainPanel.add(jLabel1, java.awt.BorderLayout.NORTH);
+        mainPanel.add(jSeparator1, java.awt.BorderLayout.NORTH);
 
-        java.awt.Component[] components = getContentPane().getComponents();
-        for (java.awt.Component comp : components) {
-            wrapper.add(comp);
-        }
+        // Painel central com os controles
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new java.awt.BorderLayout());
 
-        getContentPane().removeAll();
-        return wrapper;
+        // Painel de controles superiores
+        JPanel controlsPanel = new JPanel();
+        controlsPanel.setLayout(new java.awt.FlowLayout());
+
+        controlsPanel.add(jLabel2);
+        controlsPanel.add(JCBProduto);
+        controlsPanel.add(jLabel3);
+        controlsPanel.add(JRBEntrada);
+        controlsPanel.add(JRBSaida);
+        controlsPanel.add(jLabel4);
+        controlsPanel.add(JTFQuantidade);
+        controlsPanel.add(jLabel5);
+        controlsPanel.add(JTFData);
+        controlsPanel.add(JBRegistrar);
+        controlsPanel.add(JBLimpar);
+        controlsPanel.add(JBSair);
+
+        centerPanel.add(controlsPanel, java.awt.BorderLayout.NORTH);
+        centerPanel.add(jSeparator2, java.awt.BorderLayout.CENTER);
+
+        // Painel da tabela
+        JPanel tablePanel = new JPanel();
+        tablePanel.setLayout(new java.awt.BorderLayout());
+        tablePanel.add(jLabel6, java.awt.BorderLayout.NORTH);
+        tablePanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        centerPanel.add(tablePanel, java.awt.BorderLayout.SOUTH);
+
+        mainPanel.add(centerPanel, java.awt.BorderLayout.CENTER);
+
+        return mainPanel;
     }
 
     private void conectarComServidor() {
@@ -107,23 +145,18 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         }
     }
 
-    // MÉTODO CORRIGIDO - ATUALIZAÇÃO IMEDIATA
     private void atualizarTabelaMovimentacoesImediato() {
         try {
             List<RegistroMovimentacao> lista = service.listarMovimentacoes();
 
             DefaultTableModel model = (DefaultTableModel) JTMovimentacao.getModel();
-            model.setRowCount(0); // limpa a tabela
+            model.setRowCount(0);
 
             if (lista != null && !lista.isEmpty()) {
                 for (RegistroMovimentacao reg : lista) {
                     Produto produto = service.buscarProdutoPorId(reg.getProdutoId());
                     String nomeProduto = (produto != null) ? produto.getNome() : "ID: " + reg.getProdutoId();
-
-                    // Buscar saldo atual do produto
                     int saldoAtual = (produto != null) ? produto.getQuantidade() : 0;
-
-                    // Formatar data
                     String dataFormatada = reg.getDataMovimentacao();
 
                     model.addRow(new Object[]{
@@ -138,6 +171,13 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
             } else {
                 System.out.println("Nenhuma movimentação encontrada para exibir.");
             }
+
+            SwingUtilities.invokeLater(() -> {
+                JTMovimentacao.repaint();
+                jScrollPane1.repaint();
+                this.revalidate();
+                this.repaint();
+            });
 
         } catch (Exception e) {
             System.err.println("Erro ao atualizar tabela de movimentações: " + e.getMessage());
@@ -156,6 +196,12 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
             } else {
                 JCBProduto.addItem("Nenhum produto cadastrado");
             }
+
+            SwingUtilities.invokeLater(() -> {
+                JCBProduto.revalidate();
+                JCBProduto.repaint();
+            });
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
             e.printStackTrace();
@@ -169,6 +215,30 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         if (JCBProduto.getItemCount() > 0) {
             JCBProduto.setSelectedIndex(0);
         }
+
+        SwingUtilities.invokeLater(() -> {
+            // Atualiza componentes individuais
+            JTFQuantidade.revalidate();
+            JTFQuantidade.repaint();
+            JCBProduto.revalidate();
+            JCBProduto.repaint();
+            JRBEntrada.revalidate();
+            JRBEntrada.repaint();
+            JRBSaida.revalidate();
+            JRBSaida.repaint();
+
+            // Atualiza botões
+            JBRegistrar.revalidate();
+            JBRegistrar.repaint();
+            JBLimpar.revalidate();
+            JBLimpar.repaint();
+            JBSair.revalidate();
+            JBSair.repaint();
+
+            // Atualiza frame completo
+            this.revalidate();
+            this.repaint();
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -196,6 +266,7 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Movimentação de Estoque");
+        setPreferredSize(new java.awt.Dimension(800, 600));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Movimentação de Estoque");
@@ -356,15 +427,21 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         boolean sucesso = registrarMovimentacao(tipo);
 
         if (sucesso) {
-            // ATUALIZAÇÃO IMEDIATA DA TABELA
             atualizarTabelaMovimentacoesImediato();
 
             JOptionPane.showMessageDialog(this,
                     tipo + " registrada com sucesso!\nTabela atualizada automaticamente.",
                     "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
-            // Limpar campos após sucesso
             limparCampos();
+
+            SwingUtilities.invokeLater(() -> {
+                this.revalidate();
+                this.repaint();
+                this.getContentPane().revalidate();
+                this.getContentPane().repaint();
+            });
+
         } else {
             JOptionPane.showMessageDialog(this,
                     "Falha ao registrar " + tipo.toLowerCase() + ".",
