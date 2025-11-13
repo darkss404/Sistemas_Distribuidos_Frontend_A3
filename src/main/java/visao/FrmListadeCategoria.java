@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import service.EstoqueService;
+import service.CategoriaService;
 import javax.swing.JPanel;
 
 public class FrmListadeCategoria extends javax.swing.JFrame {
@@ -22,18 +22,15 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
-        // Se o contentPane já for um JPanel, retorna ele
         if (getContentPane() instanceof JPanel) {
             return (JPanel) getContentPane();
         }
 
-        // Se não, cria um wrapper com todos os componentes
         java.awt.Component[] components = getContentPane().getComponents();
         for (java.awt.Component comp : components) {
             wrapper.add(comp);
         }
 
-        // Limpa o contentPane original
         getContentPane().removeAll();
 
         return wrapper;
@@ -43,7 +40,7 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
 
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+            CategoriaService service = (CategoriaService) registry.lookup("EstoqueService");
 
             List<Categoria> lista = service.listarCategorias();
 
@@ -52,10 +49,10 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
 
             for (Categoria c : lista) {
                 modelo.addRow(new Object[]{
-                    c.getId(),
-                    c.getNomeCategoria(),
-                    c.getTamanho(),
-                    c.getEmbalagem()
+                        c.getId(),
+                        c.getNomeCategoria(),
+                        c.getTamanho(),
+                        c.getEmbalagem()
                 });
             }
 
@@ -87,15 +84,15 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
         jLabel1.setText("Lista de Categoria");
 
         JTListaCategoria.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "ID", "Nome", "Tamanho", "Embalagem"
-            }
+                new Object [][] {
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null}
+                },
+                new String [] {
+                        "ID", "Nome", "Tamanho", "Embalagem"
+                }
         ));
         jScrollPane1.setViewportView(JTListaCategoria);
 
@@ -131,45 +128,45 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(77, 77, 77)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(JBAdicionar)
-                        .addGap(42, 42, 42)
-                        .addComponent(JBEditar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(JBVoltarLC)
-                        .addGap(42, 42, 42)
-                        .addComponent(JBExcluir)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(230, 230, 230))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(77, 77, 77)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(12, 12, 12)
+                                                .addComponent(JBAdicionar)
+                                                .addGap(42, 42, 42)
+                                                .addComponent(JBEditar)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(JBVoltarLC)
+                                                .addGap(42, 42, 42)
+                                                .addComponent(JBExcluir)))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addGap(230, 230, 230))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(JBVoltarLC)
-                    .addComponent(JBAdicionar)
-                    .addComponent(JBEditar)
-                    .addComponent(JBExcluir))
-                .addContainerGap(57, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(JBVoltarLC)
+                                        .addComponent(JBAdicionar)
+                                        .addComponent(JBEditar)
+                                        .addComponent(JBExcluir))
+                                .addContainerGap(57, Short.MAX_VALUE))
         );
 
         pack();
@@ -222,7 +219,7 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
 
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+            CategoriaService service = (CategoriaService) registry.lookup("EstoqueService");
 
             service.excluirCategoria(idCategoria);
             JOptionPane.showMessageDialog(this, "Categoria excluída com sucesso!");
@@ -230,8 +227,8 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                "Erro ao excluir categoria: " + e.getMessage(),
-                "Erro", JOptionPane.ERROR_MESSAGE);
+                    "Erro ao excluir categoria: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_JBExcluirActionPerformed
 

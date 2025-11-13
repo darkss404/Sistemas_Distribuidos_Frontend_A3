@@ -5,13 +5,9 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import service.EstoqueService;
 import javax.swing.JPanel;
+import service.ProdutoService;
 
-/**
- *
- * @author eugus
- */
 public class FrmBalancoFisico extends javax.swing.JFrame {
 
     private FrmTelaPrincipal principal;
@@ -25,18 +21,15 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
-        // Se o contentPane já for um JPanel, retorna ele
         if (getContentPane() instanceof JPanel) {
             return (JPanel) getContentPane();
         }
 
-        // Se não, cria um wrapper com todos os componentes
         java.awt.Component[] components = getContentPane().getComponents();
         for (java.awt.Component comp : components) {
             wrapper.add(comp);
         }
 
-        // Limpa o contentPane original
         getContentPane().removeAll();
 
         return wrapper;
@@ -47,7 +40,7 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
 
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+            ProdutoService service = (ProdutoService) registro.lookup("EstoqueService");
             lista = service.listarProdutos();
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,11 +56,11 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
             totalEstoque += valorTotal;
 
             modelo.addRow(new Object[]{
-                p.getNome(),
-                p.getCategoria(),
-                p.getQuantidade(),
-                String.format("R$ %.2f", p.getPreco()),
-                String.format("R$ %.2f", valorTotal)
+                    p.getNome(),
+                    p.getCategoria(),
+                    p.getQuantidade(),
+                    String.format("R$ %.2f", p.getPreco()),
+                    String.format("R$ %.2f", valorTotal)
             });
         }
 
@@ -104,15 +97,15 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
         });
 
         JTBalanco.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Nome", "Categoria", "Quantidade Disponivel", "Preço Unitário", "Valor Total"
-            }
+                new Object [][] {
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null}
+                },
+                new String [] {
+                        "Nome", "Categoria", "Quantidade Disponivel", "Preço Unitário", "Valor Total"
+                }
         ));
         jScrollPane1.setViewportView(JTBalanco);
 
@@ -131,62 +124,62 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
 
         jLabel2.setText("Buscar:");
 
-        JLTotal.setText("💰 Total do Estoque: R$ 0,00");
+        JLTotal.setText("Total do Estoque: R$ 0,00");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(jSeparator2)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(242, 242, 242)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(JTFBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
-                .addComponent(JBFiltrar)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(194, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 796, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(131, 131, 131))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(416, 416, 416))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(JLTotal)
-                        .addGap(468, 468, 468))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(JBFechar)
-                        .addGap(503, 503, 503))))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jSeparator2)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(242, 242, 242)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(JTFBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(24, 24, 24)
+                                .addComponent(JBFiltrar)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap(194, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 796, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(131, 131, 131))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(jLabel1)
+                                                .addGap(416, 416, 416))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(JLTotal)
+                                                .addGap(468, 468, 468))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(JBFechar)
+                                                .addGap(503, 503, 503))))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(JTFBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(JBFiltrar))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(JLTotal)
-                .addGap(13, 13, 13)
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(JBFechar)
-                .addGap(37, 37, 37))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(21, 21, 21)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(JTFBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel2)
+                                        .addComponent(JBFiltrar))
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(39, 39, 39)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(JLTotal)
+                                .addGap(13, 13, 13)
+                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(JBFechar)
+                                .addGap(37, 37, 37))
         );
 
         pack();
@@ -205,7 +198,7 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
         List<Produto> lista = null;
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+            ProdutoService service = (ProdutoService) registro.lookup("EstoqueService");
             lista = service.listarProdutos();
         } catch (Exception e) {
             e.printStackTrace();
@@ -222,11 +215,11 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
                 totalEstoque += valorTotal;
 
                 modelo.addRow(new Object[]{
-                    p.getNome(),
-                    p.getCategoria(),
-                    p.getQuantidade(),
-                    String.format("R$ %.2f", p.getPreco()),
-                    String.format("R$ %.2f", valorTotal)
+                        p.getNome(),
+                        p.getCategoria(),
+                        p.getQuantidade(),
+                        String.format("R$ %.2f", p.getPreco()),
+                        String.format("R$ %.2f", valorTotal)
                 });
             }
         }

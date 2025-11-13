@@ -6,14 +6,16 @@ import javax.swing.table.DefaultTableModel;
 import modelo.Produto;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import service.EstoqueService;
+import service.ProdutoService;
+import service.CategoriaService;
 import modelo.Categoria;
 import javax.swing.JPanel;
 
 public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
 
     private FrmTelaPrincipal principal;
-    private EstoqueService service;
+    private ProdutoService produtoService;
+    private CategoriaService categoriaService;
 
     public FrmProdutoAbaixoDoMin(FrmTelaPrincipal principal) {
         this.principal = principal;
@@ -26,18 +28,15 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
-        // Se o contentPane já for um JPanel, retorna ele
         if (getContentPane() instanceof JPanel) {
             return (JPanel) getContentPane();
         }
 
-        // Se não, cria um wrapper com todos os componentes
         java.awt.Component[] components = getContentPane().getComponents();
         for (java.awt.Component comp : components) {
             wrapper.add(comp);
         }
 
-        // Limpa o contentPane original
         getContentPane().removeAll();
 
         return wrapper;
@@ -46,8 +45,9 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
     private void conectarComServidor() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            service = (EstoqueService) registro.lookup("EstoqueService");
-            System.out.println("Conectado ao servidor");
+            produtoService = (ProdutoService) registro.lookup("EstoqueService");
+            categoriaService = (CategoriaService) registro.lookup("EstoqueService");
+            System.out.println("Conectado ao servidor RMI com sucesso!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Erro ao conectar com o servidor: " + e.getMessage(),
@@ -61,7 +61,7 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
             JCBFiltro.removeAllItems();
             JCBFiltro.addItem("Todas");
 
-            List<Categoria> categorias = service.listarCategorias();
+            List<Categoria> categorias = categoriaService.listarCategorias();
             for (Categoria cat : categorias) {
                 JCBFiltro.addItem(cat.getNomeCategoria());
             }
@@ -72,37 +72,37 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
     }
 
     private void buscarProdutos() {
-    try {
-        String categoriaSelecionada = (String) JCBFiltro.getSelectedItem();
-        List<Produto> lista = service.listarProdutos();
+        try {
+            String categoriaSelecionada = (String) JCBFiltro.getSelectedItem();
+            List<Produto> lista = produtoService.listarProdutos();
 
-        DefaultTableModel modelo = (DefaultTableModel) JTProdutoAbaixo.getModel();
-        modelo.setRowCount(0);
+            DefaultTableModel modelo = (DefaultTableModel) JTProdutoAbaixo.getModel();
+            modelo.setRowCount(0);
 
-        for (Produto p : lista) {
-            String nomeCategoria = (p.getCategoria() != null && !p.getCategoria().isEmpty())
-                    ? p.getCategoria()
-                    : "Sem categoria";
+            for (Produto p : lista) {
+                String nomeCategoria = (p.getCategoria() != null && !p.getCategoria().isEmpty())
+                        ? p.getCategoria()
+                        : "Sem categoria";
 
-            boolean dentroCategoria = "Todas".equals(categoriaSelecionada)
-                    || nomeCategoria.equalsIgnoreCase(categoriaSelecionada);
+                boolean dentroCategoria = "Todas".equals(categoriaSelecionada)
+                        || nomeCategoria.equalsIgnoreCase(categoriaSelecionada);
 
-            if (dentroCategoria && (p.getQuantidade() < p.getMin() || p.getQuantidade() > p.getMax())) {
-                modelo.addRow(new Object[]{
-                    p.getId(),
-                    p.getNome(),
-                    p.getQuantidade(),
-                    p.getMin(),
-                    p.getMax()
-                });
+                if (dentroCategoria && (p.getQuantidade() < p.getMin() || p.getQuantidade() > p.getMax())) {
+                    modelo.addRow(new Object[]{
+                            p.getId(),
+                            p.getNome(),
+                            p.getQuantidade(),
+                            p.getMin(),
+                            p.getMax()
+                    });
+                }
             }
-        }
 
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Erro ao buscar produtos: " + e.getMessage());
-        e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao buscar produtos: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
-}
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -137,15 +137,15 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
         });
 
         JTProdutoAbaixo.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "ID", "Nome", "Quantidade", "Mínimo", "Máximo"
-            }
+                new Object [][] {
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null}
+                },
+                new String [] {
+                        "ID", "Nome", "Quantidade", "Mínimo", "Máximo"
+                }
         ));
         jScrollPane1.setViewportView(JTProdutoAbaixo);
 
@@ -162,51 +162,51 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(jSeparator2)
-            .addComponent(jSeparator3)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(59, 59, 59)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JCBFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(46, 46, 46)
-                        .addComponent(JBBuscar))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(108, 108, 108)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(172, 172, 172)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(290, 290, 290)
-                        .addComponent(JBFechar)))
-                .addContainerGap(98, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jSeparator2)
+                        .addComponent(jSeparator3)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(59, 59, 59)
+                                                .addComponent(jLabel2)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(JCBFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(46, 46, 46)
+                                                .addComponent(JBBuscar))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(108, 108, 108)
+                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(172, 172, 172)
+                                                .addComponent(jLabel1))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(290, 290, 290)
+                                                .addComponent(JBFechar)))
+                                .addContainerGap(98, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(JCBFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JBBuscar))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(3, 3, 3)
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(JBFechar)
-                .addContainerGap(29, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(15, 15, 15)
+                                .addComponent(jLabel1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel2)
+                                        .addComponent(JCBFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(JBBuscar))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(5, 5, 5)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(3, 3, 3)
+                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(5, 5, 5)
+                                .addComponent(JBFechar)
+                                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         pack();

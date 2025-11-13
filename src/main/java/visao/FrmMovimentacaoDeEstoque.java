@@ -8,14 +8,16 @@ import modelo.RegistroMovimentacao;
 import java.time.LocalDate;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import service.EstoqueService;
+import service.ProdutoService;
+import service.MovimentacaoService;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
     private FrmTelaPrincipal principal;
-    private EstoqueService service;
+    private ProdutoService produtoService;
+    private MovimentacaoService movimentacaoService;
 
     public FrmMovimentacaoDeEstoque(FrmTelaPrincipal principal) {
         this.principal = principal;
@@ -38,19 +40,15 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
     }
 
     public JPanel getContentPanel() {
-        // Cria um novo panel com layout correto
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new java.awt.BorderLayout());
 
-        // Adiciona TODOS os componentes manualmente
         mainPanel.add(jLabel1, java.awt.BorderLayout.NORTH);
         mainPanel.add(jSeparator1, java.awt.BorderLayout.NORTH);
 
-        // Painel central com os controles
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new java.awt.BorderLayout());
 
-        // Painel de controles superiores
         JPanel controlsPanel = new JPanel();
         controlsPanel.setLayout(new java.awt.FlowLayout());
 
@@ -70,7 +68,6 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         centerPanel.add(controlsPanel, java.awt.BorderLayout.NORTH);
         centerPanel.add(jSeparator2, java.awt.BorderLayout.CENTER);
 
-        // Painel da tabela
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new java.awt.BorderLayout());
         tablePanel.add(jLabel6, java.awt.BorderLayout.NORTH);
@@ -86,8 +83,8 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
     private void conectarComServidor() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            service = (EstoqueService) registro.lookup("EstoqueService");
-            System.out.println("Conectado ao servidor RMI - Movimentação");
+            produtoService = (ProdutoService) registro.lookup("EstoqueService");
+            movimentacaoService = (MovimentacaoService) registro.lookup("EstoqueService");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Erro ao conectar com o servidor: " + e.getMessage(),
@@ -116,7 +113,7 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
                 return false;
             }
 
-            Produto produto = service.buscarProdutoPorNome(nomeProduto);
+            Produto produto = produtoService.buscarProdutoPorNome(nomeProduto);
             if (produto == null || produto.getId() == 0) {
                 JOptionPane.showMessageDialog(this, "Produto não encontrado no servidor.");
                 return false;
@@ -124,7 +121,7 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
             boolean sucesso;
             if (tipo.equals("Entrada")) {
-                sucesso = service.registrarEntradaProduto(produto.getId(), quantidade);
+                sucesso = produtoService.registrarEntradaProduto(produto.getId(), quantidade);
             } else { // Saída
                 if (produto.getQuantidade() < quantidade) {
                     JOptionPane.showMessageDialog(this,
@@ -133,7 +130,7 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
                                     "Quantidade solicitada: " + quantidade);
                     return false;
                 }
-                sucesso = service.registrarSaidaProduto(produto.getId(), quantidade);
+                sucesso = produtoService.registrarSaidaProduto(produto.getId(), quantidade);
             }
 
             return sucesso;
@@ -147,14 +144,14 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
     private void atualizarTabelaMovimentacoesImediato() {
         try {
-            List<RegistroMovimentacao> lista = service.listarMovimentacoes();
+            List<RegistroMovimentacao> lista = movimentacaoService.listarMovimentacoes();
 
             DefaultTableModel model = (DefaultTableModel) JTMovimentacao.getModel();
             model.setRowCount(0);
 
             if (lista != null && !lista.isEmpty()) {
                 for (RegistroMovimentacao reg : lista) {
-                    Produto produto = service.buscarProdutoPorId(reg.getProdutoId());
+                    Produto produto = produtoService.buscarProdutoPorId(reg.getProdutoId());
                     String nomeProduto = (produto != null) ? produto.getNome() : "ID: " + reg.getProdutoId();
                     int saldoAtual = (produto != null) ? produto.getQuantidade() : 0;
                     String dataFormatada = reg.getDataMovimentacao();
@@ -167,9 +164,7 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
                             saldoAtual
                     });
                 }
-                System.out.println("Tabela atualizada com " + lista.size() + " registros de movimentação.");
             } else {
-                System.out.println("Nenhuma movimentação encontrada para exibir.");
             }
 
             SwingUtilities.invokeLater(() -> {
@@ -187,7 +182,7 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
     private void carregarProdutosNoCombo() {
         try {
-            List<Produto> lista = service.listarProdutos();
+            List<Produto> lista = produtoService.listarProdutos();
             JCBProduto.removeAllItems();
             if (lista != null && !lista.isEmpty()) {
                 for (Produto p : lista) {
@@ -217,7 +212,6 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         }
 
         SwingUtilities.invokeLater(() -> {
-            // Atualiza componentes individuais
             JTFQuantidade.revalidate();
             JTFQuantidade.repaint();
             JCBProduto.revalidate();
@@ -227,7 +221,6 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
             JRBSaida.revalidate();
             JRBSaida.repaint();
 
-            // Atualiza botões
             JBRegistrar.revalidate();
             JBRegistrar.repaint();
             JBLimpar.revalidate();
@@ -235,7 +228,6 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
             JBSair.revalidate();
             JBSair.repaint();
 
-            // Atualiza frame completo
             this.revalidate();
             this.repaint();
         });

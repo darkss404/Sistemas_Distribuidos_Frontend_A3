@@ -2,7 +2,8 @@ package visao;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import service.EstoqueService;
+import service.ProdutoService;
+import service.CategoriaService;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
@@ -25,18 +26,15 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
-        // Se o contentPane já for um JPanel, retorna ele
         if (getContentPane() instanceof JPanel) {
             return (JPanel) getContentPane();
         }
 
-        // Se não, cria um wrapper com todos os componentes
         java.awt.Component[] components = getContentPane().getComponents();
         for (java.awt.Component comp : components) {
             wrapper.add(comp);
         }
 
-        // Limpa o contentPane original
         getContentPane().removeAll();
 
         return wrapper;
@@ -45,7 +43,7 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     private void carregarCategoriasNoFiltro() {
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+            CategoriaService service = (CategoriaService) registry.lookup("EstoqueService");
             List<Categoria> categorias = service.listarCategorias();
 
             JCBCategoria.removeAllItems();
@@ -118,15 +116,15 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         });
 
         JTTabelaProdutos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "ID", "Nome", "Quantidade", "Unidade", "Categoria"
-            }
+                new Object [][] {
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null}
+                },
+                new String [] {
+                        "ID", "Nome", "Quantidade", "Unidade", "Categoria"
+                }
         ));
         JSPTabeladeProdutos.setViewportView(JTTabelaProdutos);
 
@@ -169,66 +167,66 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(JLBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JTFBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(JLCategoria)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(JCBCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(39, 39, 39)
-                        .addComponent(JBFiltrar)
-                        .addGap(185, 185, 185))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(JSPTabeladeProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 523, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(137, 137, 137))))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(319, 319, 319)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(114, 114, 114)
-                        .addComponent(JBNovoProduto)
-                        .addGap(40, 40, 40)
-                        .addComponent(JBEditar)
-                        .addGap(34, 34, 34)
-                        .addComponent(JBExcluir)
-                        .addGap(18, 18, 18)
-                        .addComponent(JBVoltarLP)
-                        .addGap(18, 18, 18)
-                        .addComponent(JBReajustar)))
-                .addContainerGap(124, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jSeparator1)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(JLBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(JTFBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(JLCategoria)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(JCBCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(39, 39, 39)
+                                                .addComponent(JBFiltrar)
+                                                .addGap(185, 185, 185))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(JSPTabeladeProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 523, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(137, 137, 137))))
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(319, 319, 319)
+                                                .addComponent(jLabel1))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(114, 114, 114)
+                                                .addComponent(JBNovoProduto)
+                                                .addGap(40, 40, 40)
+                                                .addComponent(JBEditar)
+                                                .addGap(34, 34, 34)
+                                                .addComponent(JBExcluir)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(JBVoltarLP)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(JBReajustar)))
+                                .addContainerGap(124, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(JLBuscar)
-                    .addComponent(JLCategoria)
-                    .addComponent(JTFBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JCBCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JBFiltrar))
-                .addGap(31, 31, 31)
-                .addComponent(JSPTabeladeProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(43, 43, 43)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(JBReajustar)
-                    .addComponent(JBVoltarLP)
-                    .addComponent(JBExcluir)
-                    .addComponent(JBEditar)
-                    .addComponent(JBNovoProduto))
-                .addContainerGap(60, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(5, 5, 5)
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(34, 34, 34)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(JLBuscar)
+                                        .addComponent(JLCategoria)
+                                        .addComponent(JTFBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(JCBCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(JBFiltrar))
+                                .addGap(31, 31, 31)
+                                .addComponent(JSPTabeladeProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(43, 43, 43)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(JBReajustar)
+                                        .addComponent(JBVoltarLP)
+                                        .addComponent(JBExcluir)
+                                        .addComponent(JBEditar)
+                                        .addComponent(JBNovoProduto))
+                                .addContainerGap(60, Short.MAX_VALUE))
         );
 
         pack();
@@ -248,7 +246,7 @@ public class FrmListadeProduto extends javax.swing.JFrame {
 
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+            ProdutoService service = (ProdutoService) registry.lookup("EstoqueService");
 
             List<Produto> produtos = service.listarProdutos();
 
@@ -266,11 +264,11 @@ public class FrmListadeProduto extends javax.swing.JFrame {
 
             for (Produto p : produtosFiltrados) {
                 modelo.addRow(new Object[]{
-                    p.getId(),
-                    p.getNome(),
-                    p.getQuantidade(),
-                    p.getUnidade(),
-                    p.getCategoria()
+                        p.getId(),
+                        p.getNome(),
+                        p.getQuantidade(),
+                        p.getUnidade(),
+                        p.getCategoria()
                 });
             }
         } catch (Exception e) {
@@ -306,7 +304,7 @@ public class FrmListadeProduto extends javax.swing.JFrame {
             int idProduto = Integer.parseInt(JTTabelaProdutos.getValueAt(linhaSelecionada, 0).toString());
 
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+            ProdutoService service = (ProdutoService) registry.lookup("EstoqueService");
 
             Produto produto = service.buscarProdutoPorId(idProduto);
 
@@ -329,42 +327,42 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     }//GEN-LAST:event_formComponentAdded
 
     private void JBExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBExcluirActionPerformed
-      int linhaSelecionada = JTTabelaProdutos.getSelectedRow();
+        int linhaSelecionada = JTTabelaProdutos.getSelectedRow();
 
-    if (linhaSelecionada == -1) {
-        JOptionPane.showMessageDialog(this, "Selecione um produto para excluir.");
-        return;
-    }
-
-    int confirmacao = JOptionPane.showConfirmDialog(
-            this,
-            "Tem certeza que deseja excluir este produto?",
-            "Confirmar Exclusão",
-            JOptionPane.YES_NO_OPTION);
-
-    if (confirmacao != JOptionPane.YES_OPTION) {
-        return;
-    }
-
-    try {
-        int idProduto = (int) JTTabelaProdutos.getValueAt(linhaSelecionada, 0);
-
-        Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-        EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
-
-        boolean sucesso = service.DeletarProdutoID(idProduto);
-
-        if (sucesso) {
-            JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!");
-            carregarTabelaProdutos();
-        } else {
-            JOptionPane.showMessageDialog(this, "Erro ao excluir o produto.");
+        if (linhaSelecionada == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para excluir.");
+            return;
         }
 
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Erro ao excluir produto: " + e.getMessage());
-        e.printStackTrace();
-    }
+        int confirmacao = JOptionPane.showConfirmDialog(
+                this,
+                "Tem certeza que deseja excluir este produto?",
+                "Confirmar Exclusão",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirmacao != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try {
+            int idProduto = (int) JTTabelaProdutos.getValueAt(linhaSelecionada, 0);
+
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            ProdutoService service = (ProdutoService) registry.lookup("EstoqueService");
+
+            boolean sucesso = service.DeletarProdutoID(idProduto);
+
+            if (sucesso) {
+                JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!");
+                carregarTabelaProdutos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao excluir o produto.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao excluir produto: " + e.getMessage());
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_JBExcluirActionPerformed
 
     private void JBReajustarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBReajustarActionPerformed
@@ -373,31 +371,30 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         carregarTabelaProdutos();
     }//GEN-LAST:event_JBReajustarActionPerformed
 
-   public void carregarTabelaProdutos() {
-    try {
-        Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-        EstoqueService service = (EstoqueService) registry.lookup("EstoqueService");
+    public void carregarTabelaProdutos() {
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            ProdutoService service = (ProdutoService) registry.lookup("EstoqueService");
 
-        List<Produto> lista = service.listarProdutos();
+            List<Produto> lista = service.listarProdutos();
 
-        DefaultTableModel modelo = (DefaultTableModel) JTTabelaProdutos.getModel();
-        modelo.setRowCount(0);
+            DefaultTableModel modelo = (DefaultTableModel) JTTabelaProdutos.getModel();
+            modelo.setRowCount(0);
 
-        for (Produto p : lista) {
-            System.out.println("Categoria do produto carregado: " + p.getCategoria());
-            modelo.addRow(new Object[]{
-                p.getId(),
-                p.getNome(),
-                p.getQuantidade(),
-                p.getUnidade(),
-                p.getCategoria()
-            });
+            for (Produto p : lista) {
+                modelo.addRow(new Object[]{
+                        p.getId(),
+                        p.getNome(),
+                        p.getQuantidade(),
+                        p.getUnidade(),
+                        p.getCategoria()
+                });
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
+            e.printStackTrace();
         }
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
-        e.printStackTrace();
-    }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

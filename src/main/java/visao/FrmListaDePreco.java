@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Produto;
-import service.EstoqueService; 
+import service.ProdutoService;
 import javax.swing.JPanel;
 
 public class FrmListaDePreco extends javax.swing.JFrame {
@@ -22,29 +22,26 @@ public class FrmListaDePreco extends javax.swing.JFrame {
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
-        // Se o contentPane já for um JPanel, retorna ele
         if (getContentPane() instanceof JPanel) {
             return (JPanel) getContentPane();
         }
 
-        // Se não, cria um wrapper com todos os componentes
         java.awt.Component[] components = getContentPane().getComponents();
         for (java.awt.Component comp : components) {
             wrapper.add(comp);
         }
 
-        // Limpa o contentPane original
         getContentPane().removeAll();
 
         return wrapper;
     }
 
     public void carregarTabela() {
-        List<Produto> lista = null; 
+        List<Produto> lista = null;
 
-       try {
+        try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+            ProdutoService service = (ProdutoService) registro.lookup("EstoqueService");
             lista = service.listarProdutos();
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,11 +54,11 @@ public class FrmListaDePreco extends javax.swing.JFrame {
 
         for (Produto p : lista) {
             modelo.addRow(new Object[]{
-                p.getId(),
-                p.getNome(),
-                p.getUnidade(),
-                p.getCategoria(),
-                String.format("R$ %.2f", p.getPreco())
+                    p.getId(),
+                    p.getNome(),
+                    p.getUnidade(),
+                    p.getCategoria(),
+                    String.format("R$ %.2f", p.getPreco())
             });
         }
     }
@@ -83,15 +80,15 @@ public class FrmListaDePreco extends javax.swing.JFrame {
         jLabel1.setText("Lista de Preços");
 
         JTListaDePreco.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "ID", "Nome", "Unidade", "Categoria", "Preço Unitário"
-            }
+                new Object [][] {
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null}
+                },
+                new String [] {
+                        "ID", "Nome", "Unidade", "Categoria", "Preço Unitário"
+                }
         ));
         jScrollPane1.setViewportView(JTListaDePreco);
 
@@ -113,40 +110,40 @@ public class FrmListaDePreco extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(71, 71, 71)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 534, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(JBEditar)
-                        .addGap(85, 85, 85)
-                        .addComponent(JBFechar)
-                        .addGap(138, 138, 138))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(194, 194, 194))))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(71, 71, 71)
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 534, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(JBEditar)
+                                                .addGap(85, 85, 85)
+                                                .addComponent(JBFechar)
+                                                .addGap(138, 138, 138))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(jLabel1)
+                                                .addGap(194, 194, 194))))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(42, 42, 42)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(JBFechar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JBEditar))
-                .addGap(38, 38, 38))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(19, 19, 19)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(42, 42, 42)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(JBFechar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(JBEditar))
+                                .addGap(38, 38, 38))
         );
 
         pack();
@@ -165,7 +162,7 @@ public class FrmListaDePreco extends javax.swing.JFrame {
 
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            EstoqueService service = (EstoqueService) registro.lookup("EstoqueService");
+            ProdutoService service = (ProdutoService) registro.lookup("EstoqueService");
             produto = service.buscarProdutoPorId(idProduto);
         } catch (Exception e) {
             e.printStackTrace();
