@@ -9,16 +9,33 @@ import java.rmi.registry.Registry;
 import service.CategoriaService;
 import javax.swing.JPanel;
 
+/**
+ * Tela responsável por listar, filtrar e gerenciar categorias cadastradas no
+ * sistema. Permite adicionar, editar e excluir categorias usando comunicação
+ * RMI.
+ */
 public class FrmListadeCategoria extends javax.swing.JFrame {
 
     private FrmTelaPrincipal principal;
 
+    /**
+     * Construtor da tela de listagem de categorias.
+     *
+     * @param principal referência da tela principal para permitir retorno ao
+     * menu.
+     */
     public FrmListadeCategoria(FrmTelaPrincipal principal) {
         this.principal = principal;
         initComponents();
         carregarTabela();
     }
 
+    /**
+     * Retorna o painel contendo todos os componentes visuais da janela. Usado
+     * para trocar telas dentro do JFrame principal.
+     *
+     * @return JPanel contendo o conteúdo atual da janela.
+     */
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
@@ -36,6 +53,10 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
         return wrapper;
     }
 
+    /**
+     * Carrega todas as categorias do servidor RMI e popula a tabela da
+     * interface. Atualiza a JTable com ID, Nome, Tamanho e Embalagem.
+     */
     public void carregarTabela() {
 
         try {
@@ -49,10 +70,10 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
 
             for (Categoria c : lista) {
                 modelo.addRow(new Object[]{
-                        c.getId(),
-                        c.getNomeCategoria(),
-                        c.getTamanho(),
-                        c.getEmbalagem()
+                    c.getId(),
+                    c.getNomeCategoria(),
+                    c.getTamanho(),
+                    c.getEmbalagem()
                 });
             }
 
@@ -171,17 +192,32 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * Ação do botão "Voltar". Retorna para o painel principal exibindo o menu.
+     *
+     * @param evt evento de clique do botão
+     */
     private void JBVoltarLCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBVoltarLCActionPerformed
         principal.showPanel("Menu");
     }//GEN-LAST:event_JBVoltarLCActionPerformed
-
+    /**
+     * Ação do botão "Adicionar". Abre a tela de cadastro de categoria no modo
+     * de criação e após o fechamento recarrega a tabela de categorias.
+     *
+     * @param evt evento de clique do botão
+     */
     private void JBAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBAdicionarActionPerformed
         FrmCadastroDeCategoria dialog = new FrmCadastroDeCategoria(null, true);
         dialog.setVisible(true);
         carregarTabela();
     }//GEN-LAST:event_JBAdicionarActionPerformed
-
+    /**
+     * Ação do botão "Editar". Verifica se uma categoria foi selecionada. Caso
+     * sim, obtém os dados da linha selecionada, cria um objeto Categoria e abre
+     * a tela de cadastro no modo edição. Ao finalizar, atualiza a tabela.
+     *
+     * @param evt evento de clique do botão
+     */
     private void JBEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBEditarActionPerformed
         int linhaSelecionada = JTListaCategoria.getSelectedRow();
 
@@ -201,7 +237,13 @@ public class FrmListadeCategoria extends javax.swing.JFrame {
         dialog.setVisible(true);
         carregarTabela();
     }//GEN-LAST:event_JBEditarActionPerformed
-
+    /**
+     * Ação do botão "Excluir". Verifica se uma categoria foi selecionada. Caso
+     * sim, solicita confirmação ao usuário e envia a requisição ao servidor
+     * para excluir a categoria pelo ID. Em seguida atualiza a tabela.
+     *
+     * @param evt evento de clique do botão
+     */
     private void JBExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBExcluirActionPerformed
         int linhaSelecionada = JTListaCategoria.getSelectedRow();
 

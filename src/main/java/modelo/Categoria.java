@@ -1,9 +1,15 @@
 package modelo;
 
 import java.io.Serializable;
-
+/**
+ * Representa uma categoria de produto no sistema.
+ * Contém informações como nome, tamanho e tipo de embalagem.
+ * A classe implementa Serializable para permitir transporte via RMI.
+ */
 public class Categoria implements Serializable {
-
+ /**
+     * Identificador utilizado para controle de versão da serialização.
+     */
     private static final long serialVersionUID = 1L; // Identificador de serialização
     private int id; // Identificador da categoria
     private String nomeCategoria; // Nome da categoria

@@ -9,16 +9,33 @@ import modelo.Produto;
 import service.ProdutoService;
 import javax.swing.JPanel;
 
+/**
+ * Tela responsável por exibir a lista de preços dos produtos cadastrados.
+ * Permite visualizar informações básicas dos produtos e abrir a tela de edição.
+ *
+ * Os dados são obtidos através de uma conexão RMI com o serviço ProdutoService.
+ */
 public class FrmListaDePreco extends javax.swing.JFrame {
 
     private FrmTelaPrincipal principal;
 
+    /**
+     * Construtor que inicializa a interface e carrega os dados da tabela.
+     *
+     * @param principal referência da tela principal
+     */
     public FrmListaDePreco(FrmTelaPrincipal principal) {
         this.principal = principal;
         initComponents();
         carregarTabela();
     }
 
+    /**
+     * Retorna o painel que contém os componentes da janela. Esse método permite
+     * que o painel seja integrado a outro container externo.
+     *
+     * @return o painel com os componentes do formulário
+     */
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
@@ -36,6 +53,10 @@ public class FrmListaDePreco extends javax.swing.JFrame {
         return wrapper;
     }
 
+    /**
+     * Carrega os produtos na tabela a partir do serviço remoto. Em caso de
+     * falha na comunicação ou outro erro, apresenta mensagem ao usuário.
+     */
     public void carregarTabela() {
         List<Produto> lista = null;
 
@@ -54,11 +75,11 @@ public class FrmListaDePreco extends javax.swing.JFrame {
 
         for (Produto p : lista) {
             modelo.addRow(new Object[]{
-                    p.getId(),
-                    p.getNome(),
-                    p.getUnidade(),
-                    p.getCategoria(),
-                    String.format("R$ %.2f", p.getPreco())
+                p.getId(),
+                p.getNome(),
+                p.getUnidade(),
+                p.getCategoria(),
+                String.format("R$ %.2f", p.getPreco())
             });
         }
     }
@@ -148,7 +169,13 @@ public class FrmListaDePreco extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+ /**
+     * Ação executada ao clicar no botão Editar. Recupera o produto selecionado
+     * na tabela, busca seus dados no serviço remoto e abre a tela de edição
+     * para o usuário modificar as informações.
+     *
+     * @param evt evento disparado ao clicar no botão
+     */
     private void JBEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBEditarActionPerformed
         int linhaSelecionada = JTListaDePreco.getSelectedRow();
         if (linhaSelecionada == -1) {
@@ -175,7 +202,12 @@ public class FrmListaDePreco extends javax.swing.JFrame {
         carregarTabela();
 
     }//GEN-LAST:event_JBEditarActionPerformed
-
+    /**
+     * Ação executada ao clicar no botão Fechar. Retorna o usuário para o painel
+     * de Relatórios na tela principal.
+     *
+     * @param evt evento disparado ao clicar no botão
+     */
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
         principal.showPanel("Relatorios");
     }//GEN-LAST:event_JBFecharActionPerformed

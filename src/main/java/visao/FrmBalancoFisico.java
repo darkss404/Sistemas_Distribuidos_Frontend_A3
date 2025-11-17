@@ -8,16 +8,36 @@ import java.rmi.registry.Registry;
 import javax.swing.JPanel;
 import service.ProdutoService;
 
+/**
+ * Tela de relatório que exibe o balanço físico e financeiro do estoque. Lista
+ * todos os produtos cadastrados e calcula o valor total em estoque. A tela
+ * permite filtrar produtos por nome e acessar o total atualizado.
+ */
 public class FrmBalancoFisico extends javax.swing.JFrame {
 
+    /**
+     * Referência para a tela principal, usada para navegação entre telas.
+     */
     private FrmTelaPrincipal principal;
 
+    /**
+     * Construtor padrão que recebe a tela principal como referência e
+     * inicializa os componentes gráficos da interface.
+     *
+     * @param principal tela principal do sistema
+     */
     public FrmBalancoFisico(FrmTelaPrincipal principal) {
         this.principal = principal;
         initComponents();
         carregarTabelaBalanco();
     }
 
+    /**
+     * Retorna o painel atual de conteúdo da janela. Esse método é usado pela
+     * tela principal para permitir o encaixe desta interface no painel central.
+     *
+     * @return painel contendo os componentes da tela
+     */
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
@@ -35,6 +55,10 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
         return wrapper;
     }
 
+    /**
+     * Carrega os produtos do servidor RMI e preenche a tabela de balanço.
+     * Calcula o valor total em estoque e exibe no rodapé.
+     */
     private void carregarTabelaBalanco() {
         List<Produto> lista = null;
 
@@ -56,11 +80,11 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
             totalEstoque += valorTotal;
 
             modelo.addRow(new Object[]{
-                    p.getNome(),
-                    p.getCategoria(),
-                    p.getQuantidade(),
-                    String.format("R$ %.2f", p.getPreco()),
-                    String.format("R$ %.2f", valorTotal)
+                p.getNome(),
+                p.getCategoria(),
+                p.getQuantidade(),
+                String.format("R$ %.2f", p.getPreco()),
+                String.format("R$ %.2f", valorTotal)
             });
         }
 
@@ -184,15 +208,29 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * Ação do botão Fechar. Retorna o usuário para o painel de relatórios.
+     *
+     * @param evt evento disparado pelo botão
+     */
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
         principal.showPanel("Relatorios");
     }//GEN-LAST:event_JBFecharActionPerformed
-
+    /**
+     * Ação do campo de busca ao pressionar Enter. Atualmente não possui
+     * implementação adicional.
+     *
+     * @param evt evento disparado
+     */
     private void JTFBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTFBuscarActionPerformed
 
     }//GEN-LAST:event_JTFBuscarActionPerformed
-
+    /**
+     * Filtra os produtos exibidos na tabela com base no texto digitado. A
+     * filtragem considera apenas produtos cujo nome contenha o texto.
+     *
+     * @param evt evento disparado pelo botão Filtrar
+     */
     private void JBFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFiltrarActionPerformed
         String texto = JTFBuscar.getText().trim().toLowerCase();
         List<Produto> lista = null;
@@ -215,29 +253,72 @@ public class FrmBalancoFisico extends javax.swing.JFrame {
                 totalEstoque += valorTotal;
 
                 modelo.addRow(new Object[]{
-                        p.getNome(),
-                        p.getCategoria(),
-                        p.getQuantidade(),
-                        String.format("R$ %.2f", p.getPreco()),
-                        String.format("R$ %.2f", valorTotal)
+                    p.getNome(),
+                    p.getCategoria(),
+                    p.getQuantidade(),
+                    String.format("R$ %.2f", p.getPreco()),
+                    String.format("R$ %.2f", valorTotal)
                 });
             }
         }
 
         JLTotal.setText("Total do estoque: R$ " + String.format("%.2f", totalEstoque));
     }//GEN-LAST:event_JBFiltrarActionPerformed
-
+    /**
+     * Classe auxiliar usada como estrutura para representar o balanço físico.
+     * Essa classe não está integrada com o restante do sistema, mas pode ser
+     * usada para cálculos e relatórios futuros.
+     */
     public class BalancoFisico {
 
+        /**
+         * Identificador do produto.
+         */
         public int id;
+
+        /**
+         * Nome do produto.
+         */
         public String nome;
+
+        /**
+         * Categoria do produto.
+         */
         public String categoria;
+
+        /**
+         * Quantidade inicial em estoque.
+         */
         public int quantidadeInicial;
+
+        /**
+         * Quantidade de entradas.
+         */
         public int entrada;
+
+        /**
+         * Quantidade de saídas.
+         */
         public int Saida;
+
+        /**
+         * Quantidade final em estoque.
+         */
         public int quantidadeFinal;
+
+        /**
+         * Unidade de medida do produto.
+         */
         public String unidade;
+
+        /**
+         * Custo unitário do produto.
+         */
         public double custoUnitario;
+
+        /**
+         * Custo total calculado.
+         */
         public double custoFinal;
     }
 

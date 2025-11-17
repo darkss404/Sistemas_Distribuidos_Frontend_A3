@@ -10,11 +10,29 @@ import java.rmi.registry.Registry;
 import service.ProdutoService;
 import service.CategoriaService;
 
+/**
+ * Tela de cadastro e edição de produtos. Permite inserir novos produtos no
+ * sistema ou editar produtos já existentes. Os dados são enviados para o
+ * serviço remoto ProdutoService através de RMI.
+ */
 public class FrmCadastrodeProduto extends javax.swing.JDialog {
 
+    /**
+     * Logger para registro de erros e informações internas.
+     */
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmCadastrodeProduto.class.getName());
+    /**
+     * Produto atualmente sendo editado. Quando nulo, a tela funciona em modo de
+     * cadastro.
+     */
     private Produto produtoEmEdicao;
 
+    /**
+     * Construtor usado para cadastrar um novo produto.
+     *
+     * @param parent janela pai
+     * @param modal define se o diálogo é modal
+     */
     public FrmCadastrodeProduto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -23,6 +41,13 @@ public class FrmCadastrodeProduto extends javax.swing.JDialog {
         setLocationRelativeTo(parent);
     }
 
+    /**
+     * Construtor usado para editar um produto existente.
+     *
+     * @param parent janela pai
+     * @param modal define se o diálogo é modal
+     * @param produto produto que será editado
+     */
     public FrmCadastrodeProduto(java.awt.Frame parent, boolean modal, Produto produto) {
         super(parent, modal);
         initComponents();
@@ -178,6 +203,12 @@ public class FrmCadastrodeProduto extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Evento do botão Salvar. Valida os dados preenchidos, cria ou atualiza o
+     * produto e envia ao serviço remoto ProdutoService.
+     *
+     * @param evt evento de clique do botão
+     */
     private void JBSalvarActionPerformed(java.awt.event.ActionEvent evt) {
 
         if (JTFNome.getText().isEmpty()
@@ -264,6 +295,11 @@ public class FrmCadastrodeProduto extends javax.swing.JDialog {
 
 
     private void JBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBCancelarActionPerformed
+        /**
+         * Evento do botão Cancelar. Fecha a janela sem salvar alterações.
+         *
+         * @param evt evento de clique
+         */
         dispose();
     }//GEN-LAST:event_JBCancelarActionPerformed
 
@@ -274,7 +310,10 @@ public class FrmCadastrodeProduto extends javax.swing.JDialog {
     private void JTFNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTFNomeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_JTFNomeActionPerformed
-
+    /**
+     * Carrega as categorias do serviço remoto e preenche o combo. No modo
+     * edição, garante que a categoria atual do produto apareça na lista.
+     */
     private void carregarCategoriasDoBanco() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);

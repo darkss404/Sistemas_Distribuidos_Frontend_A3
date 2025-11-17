@@ -16,7 +16,7 @@ import modelo.Produto;
  * Construtor da tela de listagem de produtos. Carrega a tabela e categorias
  * assim que a janela é criada.
  *
- * @param principal referência à tela principal para permitir navegação
+ * 
  */
 public class FrmListadeProduto extends javax.swing.JFrame {
 

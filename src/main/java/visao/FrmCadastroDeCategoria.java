@@ -7,16 +7,39 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import service.CategoriaService;
 
+/**
+ * Janela de cadastro e edição de categorias. Permite criar uma nova categoria
+ * ou editar uma existente. A comunicação com o servidor é feita via RMI
+ * utilizando CategoriaService.
+ */
 public class FrmCadastroDeCategoria extends javax.swing.JDialog {
 
+    /**
+     * Armazena o ID da categoria que está sendo editada. Caso seja zero,
+     * significa que é um novo cadastro.
+     */
     private int idCategoria = 0;
 
+    /**
+     * Construtor utilizado para criar uma nova categoria.
+     *
+     * @param parent janela pai que abriu esta tela
+     * @param modal define se o diálogo será modal
+     */
     public FrmCadastroDeCategoria(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
     }
 
+    /**
+     * Construtor utilizado quando o usuário deseja editar uma categoria
+     * existente.
+     *
+     * @param parent janela pai que abriu esta tela
+     * @param modal define se o diálogo será modal
+     * @param categoria categoria que será carregada para edição
+     */
     public FrmCadastroDeCategoria(java.awt.Frame parent, boolean modal, Categoria categoria) {
         super(parent, modal);
         initComponents();
@@ -157,13 +180,29 @@ public class FrmCadastroDeCategoria extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+ /**
+     * Ação disparada quando o campo de nome da categoria é utilizado.
+     * Atualmente não possui comportamento específico.
+     *
+     * @param evt evento de ação
+     */
     private void JTFNomeCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JTFNomeCategoriaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_JTFNomeCategoriaActionPerformed
-
+    /**
+     * Ação disparada ao selecionar um tamanho na lista. Atualmente não possui
+     * comportamento específico.
+     *
+     * @param evt evento de ação
+     */
     private void JCBTamanhoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBTamanhoActionPerformed
-        // TODO add your handling code here:
+        /**
+         * Botão responsável por salvar ou atualizar a categoria. Realiza
+         * validação dos campos, cria um objeto Categoria e o envia ao servidor
+         * via RMI.
+         *
+         * @param evt evento de clique
+         */
     }//GEN-LAST:event_JCBTamanhoActionPerformed
     private void JBSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBSalvarActionPerformed
 
@@ -198,7 +237,11 @@ public class FrmCadastroDeCategoria extends javax.swing.JDialog {
             e.printStackTrace();
         }
     }//GEN-LAST:event_JBSalvarActionPerformed
-
+    /**
+     * Limpa todos os campos da tela e retorna o foco para o nome da categoria.
+     *
+     * @param evt evento de clique
+     */
     private void JBLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBLimparActionPerformed
         JTFNomeCategoria.setText("");
         JCBTamanho.setSelectedIndex(0);
@@ -206,7 +249,11 @@ public class FrmCadastroDeCategoria extends javax.swing.JDialog {
 
         JTFNomeCategoria.requestFocus();
     }//GEN-LAST:event_JBLimparActionPerformed
-
+    /**
+     * Fecha a janela sem salvar alterações.
+     *
+     * @param evt evento de clique
+     */
     private void JBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBCancelarActionPerformed
         dispose();
     }//GEN-LAST:event_JBCancelarActionPerformed

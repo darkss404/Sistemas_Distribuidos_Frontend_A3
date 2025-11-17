@@ -7,7 +7,6 @@ import visao.FrmTelaPrincipal;
  * exibindo a tela principal.
  */
 public class Principal {
-
     /**
      * Método responsável por iniciar o sistema.
      *
