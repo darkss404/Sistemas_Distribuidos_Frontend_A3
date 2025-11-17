@@ -8,11 +8,28 @@ import javax.swing.JOptionPane;
 import modelo.Produto;
 import service.ProdutoService;
 
+/**
+ * JDialog responsável por realizar o reajuste de preço dos produtos cadastrados
+ * no sistema de estoque. Permite selecionar um produto, visualizar seu preço
+ * atual e aplicá-lo a um aumento ou redução percentual.
+ *
+ * A classe se conecta ao servidor RMI para obter, buscar e salvar os produtos.
+ */
 public class FrmReajustarPreco extends javax.swing.JDialog {
 
+    /**
+     * Serviço remoto para operações relacionadas a produtos.
+     */
     private ProdutoService service;
+    /**
+     * Produto atualmente selecionado para reajuste.
+     */
     private Produto produto;
 
+    /**
+     * Construtor padrão do formulário de reajuste de preço. Inicializa os
+     * componentes, conecta ao servidor e carrega os produtos.
+     */
     public FrmReajustarPreco() {
         super((java.awt.Frame) null, true);
         initComponents();
@@ -24,6 +41,10 @@ public class FrmReajustarPreco extends javax.swing.JDialog {
         JCBProduto.addActionListener(evt -> atualizarPrecoAtual());
     }
 
+    /**
+     * Conecta a interface ao servidor RMI responsável por fornecer o serviço de
+     * produtos.
+     */
     private void conectarComServidor() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
@@ -36,6 +57,12 @@ public class FrmReajustarPreco extends javax.swing.JDialog {
         }
     }
 
+    /**
+     * Construtor utilizado quando já existe um produto definido para reajuste.
+     *
+     * @param produto Produto previamente selecionado para ter seu preço
+     * ajustado.
+     */
     public FrmReajustarPreco(Produto produto) {
         super((java.awt.Frame) null, true);
         initComponents();
@@ -46,6 +73,9 @@ public class FrmReajustarPreco extends javax.swing.JDialog {
         JTFPrecoAtual.setText(String.format("R$ %.2f", produto.getPreco()));
     }
 
+    /**
+     * Carrega no ComboBox todos os produtos obtidos via serviço remoto.
+     */
     private void carregarProdutosNoCombo() {
         try {
             List<Produto> lista = service.listarProdutos();
@@ -58,6 +88,10 @@ public class FrmReajustarPreco extends javax.swing.JDialog {
         }
     }
 
+    /**
+     * Atualiza o campo de preço atual conforme o produto selecionado no
+     * ComboBox.
+     */
     private void atualizarPrecoAtual() {
         try {
             String nomeSelecionado = (String) JCBProduto.getSelectedItem();
@@ -191,7 +225,12 @@ public class FrmReajustarPreco extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+ /**
+     * Evento do botão de aumento de preço. Calcula o aumento percentual e salva
+     * no servidor.
+     *
+     * @param evt Evento de clique.
+     */
     private void JBAumentarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBAumentarActionPerformed
         try {
             double percentual = Double.parseDouble(JTFPercentual.getText());
@@ -211,7 +250,12 @@ public class FrmReajustarPreco extends javax.swing.JDialog {
             e.printStackTrace();
         }
     }//GEN-LAST:event_JBAumentarActionPerformed
-
+    /**
+     * Evento do botão de redução de preço. Calcula a redução percentual e
+     * impede resultado negativo.
+     *
+     * @param evt Evento de clique.
+     */
     private void JBReduzirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBReduzirActionPerformed
         try {
             double percentual = Double.parseDouble(JTFPercentual.getText());
@@ -236,7 +280,11 @@ public class FrmReajustarPreco extends javax.swing.JDialog {
             e.printStackTrace();
         }
     }//GEN-LAST:event_JBReduzirActionPerformed
-
+    /**
+     * Fecha a janela quando o botão Voltar é clicado.
+     *
+     * @param evt Evento de clique.
+     */
     private void JBVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBVoltarActionPerformed
         dispose();
     }//GEN-LAST:event_JBVoltarActionPerformed

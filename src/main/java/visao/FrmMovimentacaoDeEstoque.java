@@ -15,10 +15,21 @@ import javax.swing.SwingUtilities;
 
 public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
+    /**
+     * Tela responsável por registrar e listar movimentações de estoque. Permite
+     * registrar entradas e saídas, carregar produtos, validar dados e atualizar
+     * a tabela de movimentações utilizando serviços RMI.
+     */
     private FrmTelaPrincipal principal;
     private ProdutoService produtoService;
     private MovimentacaoService movimentacaoService;
 
+    /**
+     * Construtor principal da tela. Inicializa componentes, conecta ao servidor
+     * RMI, carrega produtos e atualiza a tabela de movimentações.
+     *
+     * @param principal tela principal para navegação
+     */
     public FrmMovimentacaoDeEstoque(FrmTelaPrincipal principal) {
         this.principal = principal;
         initComponents();
@@ -39,6 +50,12 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Retorna um painel contendo toda a interface da tela, permitindo seu uso
+     * dentro do CardLayout da aplicação.
+     *
+     * @return painel principal renderizado
+     */
     public JPanel getContentPanel() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new java.awt.BorderLayout());
@@ -80,6 +97,10 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         return mainPanel;
     }
 
+    /**
+     * Realiza a conexão com o servidor RMI e inicializa os serviços de produto
+     * e movimentação.
+     */
     private void conectarComServidor() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
@@ -93,6 +114,13 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Realiza o registro de movimentação (entrada ou saída), validando
+     * quantidade, produto selecionado e estoque disponível.
+     *
+     * @param tipo tipo da movimentação (Entrada ou Saída)
+     * @return true se a operação for bem-sucedida
+     */
     private boolean registrarMovimentacao(String tipo) {
         try {
             String nomeProduto = (String) JCBProduto.getSelectedItem();
@@ -125,9 +153,9 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
             } else { // Saída
                 if (produto.getQuantidade() < quantidade) {
                     JOptionPane.showMessageDialog(this,
-                            "Estoque insuficiente para saída.\n" +
-                                    "Estoque atual: " + produto.getQuantidade() + "\n" +
-                                    "Quantidade solicitada: " + quantidade);
+                            "Estoque insuficiente para saída.\n"
+                            + "Estoque atual: " + produto.getQuantidade() + "\n"
+                            + "Quantidade solicitada: " + quantidade);
                     return false;
                 }
                 sucesso = produtoService.registrarSaidaProduto(produto.getId(), quantidade);
@@ -142,6 +170,10 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Atualiza imediatamente a tabela de movimentações exibindo data, produto,
+     * tipo, quantidade e saldo atual.
+     */
     private void atualizarTabelaMovimentacoesImediato() {
         try {
             List<RegistroMovimentacao> lista = movimentacaoService.listarMovimentacoes();
@@ -157,11 +189,11 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
                     String dataFormatada = reg.getDataMovimentacao();
 
                     model.addRow(new Object[]{
-                            dataFormatada,
-                            nomeProduto,
-                            reg.getTipoMovimentacao(),
-                            reg.getQuantidade(),
-                            saldoAtual
+                        dataFormatada,
+                        nomeProduto,
+                        reg.getTipoMovimentacao(),
+                        reg.getQuantidade(),
+                        saldoAtual
                     });
                 }
             } else {
@@ -180,6 +212,10 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Carrega os nomes dos produtos registrados no servidor dentro do combo
+     * box.
+     */
     private void carregarProdutosNoCombo() {
         try {
             List<Produto> lista = produtoService.listarProdutos();
@@ -203,6 +239,9 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Limpa todos os campos da tela e reseta seleções.
+     */
     private void limparCampos() {
         JTFQuantidade.setText("");
         JRBEntrada.setSelected(false);
@@ -402,11 +441,18 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+ // Ações dos botões
 
+    /**
+     * Ação do botão Sair, retorna ao menu.
+     */
     private void JBSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBSairActionPerformed
         principal.showPanel("Menu");
     }//GEN-LAST:event_JBSairActionPerformed
-
+    /**
+     * Ação do botão Registrar. Valida os dados, registra a movimentação e
+     * atualiza a tabela.
+     */
     private void JBRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBRegistrarActionPerformed
         System.out.println("Botão Registrar clicado!");
 
@@ -440,7 +486,9 @@ public class FrmMovimentacaoDeEstoque extends javax.swing.JFrame {
                     "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_JBRegistrarActionPerformed
-
+    /**
+     * Ação do botão Limpar, que reseta os campos.
+     */
     private void JBLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBLimparActionPerformed
         limparCampos();
     }//GEN-LAST:event_JBLimparActionPerformed

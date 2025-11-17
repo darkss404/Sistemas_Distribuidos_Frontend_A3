@@ -12,6 +12,12 @@ import javax.swing.JPanel;
 import modelo.Categoria;
 import modelo.Produto;
 
+/**
+ * Construtor da tela de listagem de produtos. Carrega a tabela e categorias
+ * assim que a janela é criada.
+ *
+ * @param principal referência à tela principal para permitir navegação
+ */
 public class FrmListadeProduto extends javax.swing.JFrame {
 
     private FrmTelaPrincipal principal;
@@ -23,6 +29,12 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         carregarCategoriasNoFiltro();
     }
 
+    /**
+     * Retorna o painel principal da tela para uso no sistema de navegação
+     * dentro do JFrame principal.
+     *
+     * @return JPanel conteúdo renderizado da tela
+     */
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
@@ -40,6 +52,10 @@ public class FrmListadeProduto extends javax.swing.JFrame {
         return wrapper;
     }
 
+    /**
+     * Carrega no JComboBox todas as categorias cadastradas obtidas via serviço
+     * RMI.
+     */
     private void carregarCategoriasNoFiltro() {
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
@@ -239,7 +255,12 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     private void JCBCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCBCategoriaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_JCBCategoriaActionPerformed
-
+    /**
+     * Filtra os produtos da tabela com base no nome e categoria informados pelo
+     * usuário nos campos de busca.
+     *
+     * @param evt evento de clique do botão Filtrar
+     */
     private void JBFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFiltrarActionPerformed
         String nomeBuscado = JTFBuscar.getText().trim().toLowerCase();
         String categoriaSelecionada = JCBCategoria.getSelectedItem().toString();
@@ -264,11 +285,11 @@ public class FrmListadeProduto extends javax.swing.JFrame {
 
             for (Produto p : produtosFiltrados) {
                 modelo.addRow(new Object[]{
-                        p.getId(),
-                        p.getNome(),
-                        p.getQuantidade(),
-                        p.getUnidade(),
-                        p.getCategoria()
+                    p.getId(),
+                    p.getNome(),
+                    p.getQuantidade(),
+                    p.getUnidade(),
+                    p.getCategoria()
                 });
             }
         } catch (Exception e) {
@@ -277,21 +298,37 @@ public class FrmListadeProduto extends javax.swing.JFrame {
 
         }
     }//GEN-LAST:event_JBFiltrarActionPerformed
-
+    /**
+     * Abre a tela de cadastro para criar um novo produto.
+     *
+     * @param evt evento de clique do botão Novo Produto
+     */
     private void JBNovoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBNovoProdutoActionPerformed
         FrmCadastrodeProduto dialog = new FrmCadastrodeProduto(null, true);
         dialog.setVisible(true);
         carregarTabelaProdutos();
     }//GEN-LAST:event_JBNovoProdutoActionPerformed
-
+    /**
+     * Retorna ao menu principal.
+     *
+     * @param evt evento de clique do botão Voltar
+     */
     private void JBVoltarLPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBVoltarLPActionPerformed
         principal.showPanel("Menu");
     }//GEN-LAST:event_JBVoltarLPActionPerformed
-
+    /**
+     * Método para carregr os produtos na lista
+     *
+     *
+     */
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         carregarTabelaProdutos();
     }//GEN-LAST:event_formWindowOpened
-
+    /**
+     * Abre a tela de edição preenchida com os dados do produto selecionado.
+     *
+     * @param evt evento de clique do botão Editar
+     */
     private void JBEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBEditarActionPerformed
         int linhaSelecionada = JTTabelaProdutos.getSelectedRow();
 
@@ -325,7 +362,11 @@ public class FrmListadeProduto extends javax.swing.JFrame {
     private void formComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_formComponentAdded
 
     }//GEN-LAST:event_formComponentAdded
-
+    /**
+     * Exclui o produto selecionado após confirmação do usuário.
+     *
+     * @param evt evento de clique do botão Excluir
+     */
     private void JBExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBExcluirActionPerformed
         int linhaSelecionada = JTTabelaProdutos.getSelectedRow();
 
@@ -364,13 +405,20 @@ public class FrmListadeProduto extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_JBExcluirActionPerformed
-
+    /**
+     * Abre a tela de reajuste de preços e recarrega a tabela.
+     *
+     * @param evt evento de clique do botão Reajustar Preços
+     */
     private void JBReajustarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBReajustarActionPerformed
         FrmReajustarPreco dialog = new FrmReajustarPreco();
         dialog.setVisible(true);
         carregarTabelaProdutos();
     }//GEN-LAST:event_JBReajustarActionPerformed
-
+    /**
+     * Carrega todos os produtos da base e popula a tabela. Utiliza comunicação
+     * RMI para buscar os dados.
+     */
     public void carregarTabelaProdutos() {
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
@@ -383,11 +431,11 @@ public class FrmListadeProduto extends javax.swing.JFrame {
 
             for (Produto p : lista) {
                 modelo.addRow(new Object[]{
-                        p.getId(),
-                        p.getNome(),
-                        p.getQuantidade(),
-                        p.getUnidade(),
-                        p.getCategoria()
+                    p.getId(),
+                    p.getNome(),
+                    p.getQuantidade(),
+                    p.getUnidade(),
+                    p.getCategoria()
                 });
             }
 

@@ -2,15 +2,40 @@ package visao;
 
 import javax.swing.JPanel;
 
+/**
+ * Classe responsável por exibir a tela de Relatórios do sistema. Esta tela
+ * permite navegar para diferentes relatórios, como lista de preços, balanço
+ * físico-financeiro, produtos abaixo do mínimo/máximo e quantidade de produtos
+ * por categoria.
+ *
+ * A tela é integrada ao CardLayout da classe FrmTelaPrincipal.
+ */
 public class FrmRelatorio extends javax.swing.JFrame {
 
+    /**
+     * Referência para a tela principal, utilizada para troca de painéis.
+     */
     private FrmTelaPrincipal principal;
 
+    /**
+     * Construtor da classe. Inicializa a interface gráfica e mantém a
+     * referência da tela principal.
+     *
+     * @param principal instância da tela principal que controla o CardLayout
+     */
     public FrmRelatorio(FrmTelaPrincipal principal) {
         this.principal = principal;
         initComponents();
     }
 
+    /**
+     * Retorna o painel de conteúdo desta tela para integração com o CardLayout.
+     *
+     * Caso o ContentPane já seja um JPanel, retorna diretamente. Caso
+     * contrário, encapsula os componentes em um novo JPanel.
+     *
+     * @return JPanel contendo todos os componentes da tela
+     */
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
@@ -139,23 +164,48 @@ public class FrmRelatorio extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
+ /**
+     * Evento acionado ao clicar no botão "Fechar". Retorna para o menu
+     * principal.
+     *
+     * @param evt evento de clique
+     */
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
         principal.showPanel("Menu");
     }//GEN-LAST:event_JBFecharActionPerformed
-
+    /**
+     * Evento acionado ao clicar no botão "Lista de Preços". Abre o relatório de
+     * lista de preços.
+     *
+     * @param evt evento de clique
+     */
     private void JBListadePrecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBListadePrecoActionPerformed
         principal.showPanel("ListaPreco");
     }//GEN-LAST:event_JBListadePrecoActionPerformed
-
+    /**
+     * Evento acionado ao clicar em "Balanço Físico-Financeiro". Abre o
+     * relatório de balanço físico.
+     *
+     * @param evt evento de clique
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         principal.showPanel("Balanco");
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    /**
+     * Evento acionado ao clicar em "Produtos Abaixo do Mínimo/Máximo". Abre o
+     * relatório correspondente.
+     *
+     * @param evt evento de clique
+     */
     private void JBProdutosAbaixoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBProdutosAbaixoActionPerformed
         principal.showPanel("ProdutoAbaixo");
     }//GEN-LAST:event_JBProdutosAbaixoActionPerformed
-
+    /**
+     * Evento acionado ao clicar em "Quantidade de Produtos por Categoria". Abre
+     * o relatório que mostra o total de produtos por categoria.
+     *
+     * @param evt evento de clique
+     */
     private void JBQuantidadeProdutoCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBQuantidadeProdutoCategoriaActionPerformed
         principal.showPanel("QuantidadeProduto");
     }//GEN-LAST:event_JBQuantidadeProdutoCategoriaActionPerformed

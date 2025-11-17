@@ -10,19 +10,34 @@ import javax.swing.table.DefaultTableModel;
 import modelo.Produto;
 import service.ProdutoService;
 import javax.swing.JPanel;
-
+/**
+ * Tela responsável por exibir a quantidade total de produtos agrupados por categoria.
+ * Recupera os dados do servidor RMI e apresenta os resultados em uma tabela.
+ * 
+ * Esta janela faz parte do módulo de relatórios do sistema de estoque.
+ */
 public class FrmQuantidadeDeProduto extends javax.swing.JFrame {
 
     private FrmTelaPrincipal principal;
     private ProdutoService service;
 
+    /**
+     * Construtor da classe. Inicializa a interface, conecta ao servidor e carrega os dados.
+     *
+     * @param principal referência da tela principal para navegação.
+     */
     public FrmQuantidadeDeProduto(FrmTelaPrincipal principal) {
         this.principal = principal;
         initComponents();
         conectarComServidor();
         carregarDados();
     }
-
+   /**
+     * Retorna o painel de conteúdo desta janela para ser exibido dentro de outra
+     * interface (padrão usado na troca de telas da tela principal).
+     *
+     * @return JPanel contendo os componentes da janela.
+     */
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
@@ -39,7 +54,10 @@ public class FrmQuantidadeDeProduto extends javax.swing.JFrame {
 
         return wrapper;
     }
-
+ /**
+     * Realiza a conexão com o servidor RMI e obtém a referência do serviço ProdutoService.
+     * Apresenta mensagem caso ocorra alguma falha.
+     */
     private void conectarComServidor() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
@@ -51,10 +69,14 @@ public class FrmQuantidadeDeProduto extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+    /**
+     * Carrega as quantidades de produtos agrupadas por categoria e preenche a tabela.
+     * Caso ocorra algum erro, uma mensagem é exibida ao usuário.
+     */
     private void carregarDados() {
         try {
             List<Produto> lista = service.listarProdutos();
-
+ // Mapa para acumular quantidade por categoria
             Map<String, Integer> contagemPorCategoria = new HashMap<>();
             for (Produto p : lista) {
                 String categoria = (p.getCategoria() != null && !p.getCategoria().isEmpty())
@@ -165,11 +187,19 @@ public class FrmQuantidadeDeProduto extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+  /**
+     * Botão de atualização. Recarrega os dados da tabela consultando o servidor.
+     *
+     * @param evt o evento disparado pelo clique no botão
+     */
     private void JBAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBAtualizarActionPerformed
         carregarDados();
     }//GEN-LAST:event_JBAtualizarActionPerformed
-
+    /**
+     * Botão de fechar. Retorna à tela de relatórios da tela principal.
+     *
+     * @param evt o evento disparado pelo clique no botão
+     */
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
         principal.showPanel("Relatorios");
     }//GEN-LAST:event_JBFecharActionPerformed

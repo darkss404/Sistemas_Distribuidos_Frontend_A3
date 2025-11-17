@@ -11,12 +11,22 @@ import service.CategoriaService;
 import modelo.Categoria;
 import javax.swing.JPanel;
 
+/**
+ * Janela responsável por exibir os produtos que estão abaixo do estoque mínimo
+ * ou acima do estoque máximo, com opção de filtro por categoria.
+ */
 public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
 
     private FrmTelaPrincipal principal;
     private ProdutoService produtoService;
     private CategoriaService categoriaService;
 
+    /**
+     * Construtor padrão. Inicializa os componentes, conecta ao servidor e
+     * carrega dados iniciais.
+     *
+     * @param principal Tela principal que controla os painéis.
+     */
     public FrmProdutoAbaixoDoMin(FrmTelaPrincipal principal) {
         this.principal = principal;
         initComponents();
@@ -25,6 +35,12 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
         buscarProdutos();
     }
 
+    /**
+     * Retorna o painel principal da janela, usado para navegação dentro do
+     * sistema.
+     *
+     * @return JPanel contendo os elementos da tela.
+     */
     public JPanel getContentPanel() {
         JPanel wrapper = new JPanel(new java.awt.BorderLayout());
 
@@ -42,6 +58,9 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
         return wrapper;
     }
 
+    /**
+     * Conecta ao servidor RMI e obtém as instâncias dos serviços.
+     */
     private void conectarComServidor() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
@@ -56,6 +75,10 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Carrega todas as categorias disponíveis no sistema para dentro do combo
+     * box de filtros.
+     */
     private void carregarCategorias() {
         try {
             JCBFiltro.removeAllItems();
@@ -71,6 +94,11 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Busca todos os produtos cadastrados e exibe apenas aqueles que estão
+     * abaixo do mínimo ou acima do máximo, aplicando o filtro de categoria
+     * escolhido.
+     */
     private void buscarProdutos() {
         try {
             String categoriaSelecionada = (String) JCBFiltro.getSelectedItem();
@@ -89,11 +117,11 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
 
                 if (dentroCategoria && (p.getQuantidade() < p.getMin() || p.getQuantidade() > p.getMax())) {
                     modelo.addRow(new Object[]{
-                            p.getId(),
-                            p.getNome(),
-                            p.getQuantidade(),
-                            p.getMin(),
-                            p.getMax()
+                        p.getId(),
+                        p.getNome(),
+                        p.getQuantidade(),
+                        p.getMin(),
+                        p.getMax()
                     });
                 }
             }
@@ -211,11 +239,19 @@ public class FrmProdutoAbaixoDoMin extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * Evento do botão Buscar — atualiza a tabela aplicando o filtro.
+     *
+     * @param evt ação do botão
+     */
     private void JBBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBBuscarActionPerformed
         buscarProdutos();
     }//GEN-LAST:event_JBBuscarActionPerformed
-
+    /**
+     * Evento do botão Fechar — retorna para o menu de relatórios.
+     *
+     * @param evt ação do botão
+     */
     private void JBFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBFecharActionPerformed
         principal.showPanel("Relatorios");
     }//GEN-LAST:event_JBFecharActionPerformed
